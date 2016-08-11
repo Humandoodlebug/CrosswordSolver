@@ -8,9 +8,6 @@ namespace Logic
 {
     public class Class1
     {
-        private void Temp()
-        {
-            
-        }
+
     }
 }

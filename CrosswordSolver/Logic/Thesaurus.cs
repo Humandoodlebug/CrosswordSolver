@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Logic
 {
-    public static class Thesaurus
+    public class Thesaurus
     {
 
     }

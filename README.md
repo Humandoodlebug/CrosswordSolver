@@ -1,0 +1,2 @@
+# Crossword Solver
+A project to aid in the solving of an entire crossword, rather than one word at a time. The program will use wordlists and thesaurus data to suggest solutions to users, based on what they already know. It will take into account the actual shape of the crossword, as well as the possible solutions to other words around it, informing users when they make mistakes (spelling or otherwise). The long term goal is a program that can solve a crossword almost entirely alone, using a lexical database to find solutions.

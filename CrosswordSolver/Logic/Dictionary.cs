@@ -9,7 +9,7 @@ namespace Logic
 {
     public class Dictionary
     {
-        private readonly Hunspell _hunspell = new Hunspell("en_gb.aff","en_gb.dic");
+        private readonly Hunspell _hunspell = new Hunspell("Dictionaries/en_GB.aff", "Dictionaries/en_GB.dic");
 
         public bool Verify(string word) => _hunspell.Spell(word);
         public List<string> Stem(string word) => _hunspell.Stem(word);

@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 
 namespace Logic.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class DictionaryTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void VerifyTest()
         {
-            var dict = new Dictionary();
+            var dict = new Dictionary("Dictionaries/en_GB.aff", "Dictionaries/en_GB.dic");
             Assert.IsTrue(dict.Verify("it"));
             Assert.IsTrue(dict.Verify("dictionary"));
             Assert.IsFalse(dict.Verify("dicttionary"));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void StemTest()
         {
-            var dict = new Dictionary();
+            var dict = new Dictionary("Dictionaries/en_GB.aff", "Dictionaries/en_GB.dic");
             Assert.AreEqual("jump", dict.Stem("jumping")[0]);
         }
     }

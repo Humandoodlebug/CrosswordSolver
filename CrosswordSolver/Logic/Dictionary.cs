@@ -9,19 +9,20 @@ namespace Logic
 {
     public class Dictionary
     {
-        private readonly Hunspell _hunspell;
+        public Hunspell HunspellObj { get; }
 
         public Dictionary(string affixFilePath, string dictionaryFilePath)
         {
-            _hunspell = new Hunspell(affixFilePath, dictionaryFilePath);
+            HunspellObj = new Hunspell(affixFilePath, dictionaryFilePath);
         }
 
-        public bool Verify(string word) => _hunspell.Spell(word);
-        public List<string> Stem(string word) => _hunspell.Stem(word);
+        public bool Verify(string word) => HunspellObj.Spell(word);
+        public List<string> Stem(string word) => HunspellObj.Stem(word);
+        public List<string> Generate(string word, string sample) => HunspellObj.Generate(word, sample);
 
         ~Dictionary()
         {
-            _hunspell.Dispose();
+            HunspellObj.Dispose();
         }
     }
 }

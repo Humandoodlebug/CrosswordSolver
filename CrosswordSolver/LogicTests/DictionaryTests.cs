@@ -18,7 +18,7 @@ namespace Logic.Tests
             var dict = new Dictionary("Dictionaries/en_GB.aff", "Dictionaries/en_GB.dic");
             Assert.IsTrue(dict.Verify("it"));
             Assert.IsTrue(dict.Verify("dictionary"));
-            Assert.IsFalse(dict.Verify("dicttionary"));
+            Assert.IsFalse(dict.Verify("dictionary"));
         }
 
         [TestMethod]
@@ -26,6 +26,13 @@ namespace Logic.Tests
         {
             var dict = new Dictionary("Dictionaries/en_GB.aff", "Dictionaries/en_GB.dic");
             Assert.AreEqual("jump", dict.Stem("jumping")[0]);
+        }
+
+        [TestMethod()]
+        public void GenerateTest()
+        {
+            var dict = new Dictionary("Dictionaries/en_GB.aff", "Dictionaries/en_GB.dic");
+            CollectionAssert.Contains(dict.Generate("girl", "boys"), "girls");
         }
     }
 }

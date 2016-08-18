@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Logic
 {
@@ -10,10 +9,8 @@ namespace Logic
     public class Crossword
     {
         public char[,] Grid { get; }
+        public List<Word> Words { get; }
 
-        public readonly List<Word> Words = new List<Word>();
-
-        [Serializable]
         public struct Word
         {
             public enum Orientation { Down, Across }

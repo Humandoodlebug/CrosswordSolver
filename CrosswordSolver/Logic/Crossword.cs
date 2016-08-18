@@ -19,8 +19,16 @@ namespace Logic
             public enum Orientation { Down, Across }
             public readonly int X, Y;
             public char[] Letters;
-            public int Length { get; }
+            public int Length => Letters.Length;
             public Orientation Direction;
+            
+            public Word(int xPosition, int yPosition, int length, Orientation direction)
+            {
+                X = xPosition;
+                Y = yPosition;
+                Letters = new char[length];
+                Direction = direction;
+            }
         }
     }
 }

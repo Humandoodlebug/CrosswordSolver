@@ -8,8 +8,16 @@ namespace Logic
     [Serializable]
     public class Crossword
     {
-        public char[,] Grid { get; }
+        public Crossword(int width, int height, List<Word> words)
+        {
+            Width = width;
+            Height = height;
+            Words = words;
+        }
+
         public List<Word> Words { get; }
+        public int Width { get; }
+        public int Height { get; }
 
         public struct Word
         {
@@ -26,6 +34,16 @@ namespace Logic
                 Letters = new char[length];
                 Direction = direction;
             }
+        }
+
+        public void Save(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static Crossword Load(string path)
+        {
+            throw new NotImplementedException();
         }
     }
 }

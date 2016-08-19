@@ -26,21 +26,5 @@ namespace View
         {
             InitializeComponent();
         }
-
-        private void NewButton_Selected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void LoadButton_Selected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void QuitButton_Selected(object sender, RoutedEventArgs e)
-        {
-            Hide();
-            Environment.Exit(0);
-        }
     }
 }

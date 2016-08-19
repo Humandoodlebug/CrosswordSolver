@@ -7,8 +7,8 @@
     <ProjectGuid>{7F63441F-860C-4B90-B51A-88C2516ECA83}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Logic</RootNamespace>
-    <AssemblyName>Logic</AssemblyName>
+    <RootNamespace>SC.CrosswordSolver.Logic</RootNamespace>
+    <AssemblyName>SC.CrosswordSolver.Logic</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

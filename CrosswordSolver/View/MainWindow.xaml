@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:View"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <ListView VerticalAlignment="Center">
-        <ListViewItem x:Name="NewButton" Content="New Crossword" HorizontalContentAlignment="Center" Margin="20,3" FontSize="30" Selected="NewButton_Selected"/>
-        <ListViewItem x:Name="LoadButton" Content="Load Crossword" HorizontalContentAlignment="Center" Margin="20,3" FontSize="30" Selected="LoadButton_Selected"/>
-        <ListViewItem x:Name="QuitButton" Content="Quit" HorizontalContentAlignment="Center" Margin="20,3" FontSize="30" Selected="QuitButton_Selected"/>
+    <ListView x:Name="MenuList" VerticalAlignment="Center">
+        <ListViewItem x:Name="NewButton" Content="New Crossword" HorizontalContentAlignment="Center" Margin="0,3" FontSize="30" Selected="NewButton_Selected"/>
+        <ListViewItem x:Name="LoadButton" Content="Load Crossword" HorizontalContentAlignment="Center" Margin="0,3" FontSize="30" Selected="LoadButton_Selected"/>
+        <ListViewItem x:Name="QuitButton" Content="Quit" HorizontalContentAlignment="Center" Margin="0,3" FontSize="30" Selected="QuitButton_Selected"/>
     </ListView>
 </Window>

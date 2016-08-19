@@ -39,7 +39,8 @@ namespace View
 
         private void QuitButton_Selected(object sender, RoutedEventArgs e)
         {
-
+            Hide();
+            Environment.Exit(0);
         }
     }
 }

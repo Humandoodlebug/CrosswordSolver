@@ -7,34 +7,73 @@
              xmlns:viewModels="clr-namespace:SC.CrosswordSolver.UI.ViewModels"
              xmlns:converters="clr-namespace:SC.CrosswordSolver.UI.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="400" d:DesignWidth="700">
     <UserControl.Resources>
         <Style x:Key="MenuItemStyle" TargetType="{x:Type ListBoxItem}">
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
         <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
+        <DataTemplate x:Key="MenuTemplate">
+            <ListBox x:Name="MenuList" VerticalAlignment="Center" BorderThickness="0" SelectedItem="{Binding SelectedMenuItem}"
+                 ItemsSource="{Binding MenuItems}" ItemContainerStyle="{StaticResource MenuItemStyle}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" FontSize="26"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsMenuVisible}" Value="False">
+                    <Setter Property="IsHitTestVisible" Value="False"></Setter>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="Opacity">
+                                <DoubleAnimation To="0" Duration="0:0:0.5">
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="Opacity">
+                                <DoubleAnimation To="1" Duration="0:0:1">
+                                    <DoubleAnimation.EasingFunction>
+                                        <SineEase EasingMode="EaseOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+                <Trigger Property="Opacity" Value ="0">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Trigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
     </UserControl.Resources>
     <UserControl.DataContext>
         <viewModels:MainViewModel/>
     </UserControl.DataContext>
+
     <Grid Background="White">
-        <StackPanel Margin="20,20">
-            <TextBlock Text="Please enter the dimensions of the crossword" Margin="5,0" TextAlignment="Center"/>
-            <StackPanel Orientation="Horizontal">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Button x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20" BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray" Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding BackCommand}"/>
+
+        <StackPanel Margin="10,132.333,10,153" VerticalAlignment="Center" Visibility="{Binding IsDimensionsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="1" Height="0">
+            <TextBlock Text="Please enter the dimensions of the crossword" Margin="5,0" TextAlignment="Center" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" Margin="20,5" HorizontalAlignment="Center">
                 <TextBlock Text="Height"/>
                 <TextBox Width="30" Margin="5,0" Text="{Binding Height}"/>
                 <TextBlock Text="Width"/>
                 <TextBox Width="30" Margin="5,0" Text="{Binding Width}"/>
             </StackPanel>
         </StackPanel>
-        <ListBox x:Name="MenuList" VerticalAlignment="Center" BorderThickness="0" SelectedItem="{Binding SelectedMenuItem}"
-                 ItemsSource="{Binding MenuItems}" ItemContainerStyle="{StaticResource MenuItemStyle}" Visibility="{Binding IsMenuVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" FontSize="16" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+
+        <ContentControl ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}" Grid.Row="1" Margin="0,0.333,0,0"/>
     </Grid>
 </UserControl>

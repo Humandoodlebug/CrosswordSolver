@@ -6,8 +6,10 @@ namespace SC.CrosswordSolver.UI.Model
     {
         [Description("New Crossword")]
         NewCrossword,
+
         [Description("Load Crossword")]
         LoadCrossword,
+
         [Description("Quit")]
         Quit
     }

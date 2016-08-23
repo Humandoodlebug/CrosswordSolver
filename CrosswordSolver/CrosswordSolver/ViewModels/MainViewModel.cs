@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -14,16 +13,18 @@ namespace SC.CrosswordSolver.UI.ViewModels
     {
         private bool _isMenuVisible = true;
         private bool _isDimensionsVisible;
-        private bool _isBackVisible;
 
         public MainViewModel()
         {
             MenuItems = new ObservableCollection<MenuOptions>{MenuOptions.NewCrossword, MenuOptions.LoadCrossword, MenuOptions.Quit};
+            GoBackCommand = new DelegateCommand(obj => GoBack());
         }
 
         public int? Width { get; set; }
         public int? Height { get; set; }
         public ObservableCollection<MenuOptions> MenuItems { get; }
+        private MainViewModelState _previousState;
+        public ICommand GoBackCommand { get; }
 
         public bool IsMenuVisible
         {
@@ -35,22 +36,28 @@ namespace SC.CrosswordSolver.UI.ViewModels
             }
         }
 
-        public ICommand BackCommand { get; set; }
+        private void GoBack()
+        {
+            IsMenuVisible = PreviousState.IsMenuVisible;
+            IsDimensionsVisible = PreviousState.IsDimensionsVisible;
+            PreviousState = PreviousState.PreviousState;
+        }
 
         public MenuOptions SelectedMenuItem
         {
+            get { return MenuOptions.Nothing; }
             set
             {
                 switch (value)
                 {
                     case MenuOptions.NewCrossword:
+                        PreviousState = new MainViewModelState(this);
                         IsDimensionsVisible = true;
-                        IsBackVisible = true;
                         IsMenuVisible = false;
                         break;
                     case MenuOptions.LoadCrossword:
+                        PreviousState = new MainViewModelState(this);
                         IsMenuVisible = false;
-                        IsBackVisible = true;
                         break;
                     case MenuOptions.Quit:
                         Application.Current.MainWindow.Hide();
@@ -72,12 +79,18 @@ namespace SC.CrosswordSolver.UI.ViewModels
             }
         }
 
-        public bool IsBackVisible
+        public bool IsBackVisible => PreviousState != null;
+
+        private MainViewModelState PreviousState
         {
-            get { return _isBackVisible; }
+            get
+            {
+                return _previousState;
+            }
+
             set
             {
-                _isBackVisible = value;
+                _previousState = value;
                 OnPropertyChanged(nameof(IsBackVisible));
             }
         }
@@ -86,8 +99,25 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private class MainViewModelState
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            public readonly bool IsMenuVisible;
+            public readonly bool IsDimensionsVisible;
+            public readonly int? Width;
+            public readonly int? Height;
+            public readonly MainViewModelState PreviousState;
+
+            public MainViewModelState(MainViewModel model)
+            {
+                IsMenuVisible = model._isMenuVisible;
+                IsDimensionsVisible = model._isDimensionsVisible;
+                Width = model.Width;
+                Height = model.Height;
+                PreviousState = model.PreviousState;
+            }
+
         }
     }
 }

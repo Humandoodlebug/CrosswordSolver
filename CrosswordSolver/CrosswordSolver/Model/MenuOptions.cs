@@ -4,6 +4,8 @@ namespace SC.CrosswordSolver.UI.Model
 {
     public enum MenuOptions
     {
+        Nothing,
+
         [Description("New Crossword")]
         NewCrossword,
 

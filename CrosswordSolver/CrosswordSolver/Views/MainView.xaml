@@ -15,17 +15,17 @@
         <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
         <DataTemplate x:Key="MenuTemplate">
-            <ListBox x:Name="MenuList" VerticalAlignment="Center" BorderThickness="0" SelectedItem="{Binding SelectedMenuItem}"
+            <ListView x:Name="MenuList" VerticalAlignment="Center" BorderThickness="0" SelectedItem="{Binding SelectedMenuItem}"
                  ItemsSource="{Binding MenuItems}" ItemContainerStyle="{StaticResource MenuItemStyle}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" FontSize="26"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
-            </ListBox>
+            </ListView>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding IsMenuVisible}" Value="False">
-                    <Setter Property="IsHitTestVisible" Value="False"></Setter>
+                    <Setter Property="IsHitTestVisible" Value="False"/>
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard TargetProperty="Opacity">
@@ -62,9 +62,9 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Button x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20" BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray" Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding BackCommand}"/>
+        <Button x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20" BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray" Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding GoBackCommand}"/>
 
-        <StackPanel Margin="10,132.333,10,153" VerticalAlignment="Center" Visibility="{Binding IsDimensionsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="1" Height="0">
+        <StackPanel VerticalAlignment="Center" Visibility="{Binding IsDimensionsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Row="1">
             <TextBlock Text="Please enter the dimensions of the crossword" Margin="5,0" TextAlignment="Center" VerticalAlignment="Center"/>
             <StackPanel Orientation="Horizontal" Margin="20,5" HorizontalAlignment="Center">
                 <TextBlock Text="Height"/>

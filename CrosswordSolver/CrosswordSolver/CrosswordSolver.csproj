@@ -60,6 +60,7 @@
     </ApplicationDefinition>
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Model\MenuOptions.cs" />
+    <Compile Include="Model\DelegateCommand.cs" />
     <Compile Include="Model\ObservableStack.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

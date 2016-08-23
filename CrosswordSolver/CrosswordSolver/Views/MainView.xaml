@@ -51,6 +51,21 @@
                 </Trigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+        
+        <DataTemplate x:Key="CellTemplate">
+            <TextBox Width="40" Height="40" Text="{Binding Path=.}" Margin="1" FontSize="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        </DataTemplate>
+        
+        <DataTemplate x:Key="RowTemplate">
+            <ItemsControl ItemsSource="{Binding}" ItemTemplate="{StaticResource CellTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DataTemplate>
+        
     </UserControl.Resources>
     <UserControl.DataContext>
         <viewModels:MainViewModel/>
@@ -74,6 +89,8 @@
             </StackPanel>
         </StackPanel>
 
+        <ItemsControl Grid.Row="1"  ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding CrosswordData}" Visibility="{Binding IsCrosswordVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        
         <ContentControl ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}" Grid.Row="1" Margin="0,0.333,0,0"/>
     </Grid>
 </UserControl>

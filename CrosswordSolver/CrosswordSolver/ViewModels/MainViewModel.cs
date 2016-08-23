@@ -11,19 +11,34 @@ namespace SC.CrosswordSolver.UI.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private bool _isMenuVisible = true;
+        private bool _isCrosswordVisible;
         private bool _isDimensionsVisible;
+        private bool _isMenuVisible = true;
+
+        private NavigationState _previousState;
+
 
         public MainViewModel()
         {
-            MenuItems = new ObservableCollection<MenuOptions>{MenuOptions.NewCrossword, MenuOptions.LoadCrossword, MenuOptions.Quit};
+            MenuItems = new ObservableCollection<MenuOptions>
+            {
+                MenuOptions.NewCrossword,
+                MenuOptions.LoadCrossword,
+                MenuOptions.Quit
+            };
             GoBackCommand = new DelegateCommand(obj => GoBack());
+            Populate();
         }
 
         public int? Width { get; set; }
+
         public int? Height { get; set; }
+
         public ObservableCollection<MenuOptions> MenuItems { get; }
-        private MainViewModelState _previousState;
+
+        public ObservableCollection<ObservableCollection<char>> CrosswordData { get; set; } =
+            new ObservableCollection<ObservableCollection<char>>();
+
         public ICommand GoBackCommand { get; }
 
         public bool IsMenuVisible
@@ -31,16 +46,22 @@ namespace SC.CrosswordSolver.UI.ViewModels
             get { return _isMenuVisible; }
             private set
             {
+                if (_isMenuVisible == value) return;
                 _isMenuVisible = value;
                 OnPropertyChanged(nameof(IsMenuVisible));
             }
         }
 
-        private void GoBack()
+        public bool IsCrosswordVisible
         {
-            IsMenuVisible = PreviousState.IsMenuVisible;
-            IsDimensionsVisible = PreviousState.IsDimensionsVisible;
-            PreviousState = PreviousState.PreviousState;
+            get { return _isCrosswordVisible; }
+
+            set
+            {
+                if (value == _isCrosswordVisible) return;
+                _isCrosswordVisible = value;
+                OnPropertyChanged();
+            }
         }
 
         public MenuOptions SelectedMenuItem
@@ -51,12 +72,12 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 switch (value)
                 {
                     case MenuOptions.NewCrossword:
-                        PreviousState = new MainViewModelState(this);
+                        PreviousState = new NavigationState(this);
                         IsDimensionsVisible = true;
                         IsMenuVisible = false;
                         break;
                     case MenuOptions.LoadCrossword:
-                        PreviousState = new MainViewModelState(this);
+                        PreviousState = new NavigationState(this);
                         IsMenuVisible = false;
                         break;
                     case MenuOptions.Quit:
@@ -81,12 +102,9 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public bool IsBackVisible => PreviousState != null;
 
-        private MainViewModelState PreviousState
+        private NavigationState PreviousState
         {
-            get
-            {
-                return _previousState;
-            }
+            get { return _previousState; }
 
             set
             {
@@ -97,27 +115,44 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void Populate()
+        {
+            var random = new Random();
+            for (var i = 0; i < 12; i++)
+            {
+                var currentData = new ObservableCollection<char>();
+                for (var j = 0; j < 12; j++)
+                    currentData.Add(random.Next(10).ToString()[0]);
+                CrosswordData.Add(currentData);
+            }
+        }
+
+        private void GoBack()
+        {
+            IsMenuVisible = PreviousState.IsMenuVisible;
+            IsDimensionsVisible = PreviousState.IsDimensionsVisible;
+            IsCrosswordVisible = PreviousState.IsCrosswordVisible;
+            PreviousState = PreviousState.PreviousState;
+        }
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private class MainViewModelState
+        private class NavigationState
         {
-            public readonly bool IsMenuVisible;
+            public readonly bool IsCrosswordVisible;
             public readonly bool IsDimensionsVisible;
-            public readonly int? Width;
-            public readonly int? Height;
-            public readonly MainViewModelState PreviousState;
+            public readonly bool IsMenuVisible;
+            public readonly NavigationState PreviousState;
 
-            public MainViewModelState(MainViewModel model)
+            public NavigationState(MainViewModel model)
             {
                 IsMenuVisible = model._isMenuVisible;
                 IsDimensionsVisible = model._isDimensionsVisible;
-                Width = model.Width;
-                Height = model.Height;
                 PreviousState = model.PreviousState;
+                IsCrosswordVisible = model.IsCrosswordVisible;
             }
-
         }
     }
 }

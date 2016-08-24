@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using SC.CrosswordSolver.Logic;
 using SC.CrosswordSolver.UI.Annotations;
 using SC.CrosswordSolver.UI.Model;
 
@@ -27,17 +28,17 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 MenuOptions.Quit
             };
             GoBackCommand = new DelegateCommand(obj => GoBack());
-            Populate();
         }
 
         public int? Width { get; set; }
 
         public int? Height { get; set; }
 
+        private Crossword _crossword;
+
         public ObservableCollection<MenuOptions> MenuItems { get; }
 
-        public ObservableCollection<ObservableCollection<char>> CrosswordData { get; set; } =
-            new ObservableCollection<ObservableCollection<char>>();
+        public ObservableCollection<ObservableCollection<char>> CrosswordData { get; set; }
 
         public ICommand GoBackCommand { get; }
 
@@ -50,6 +51,22 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 _isMenuVisible = value;
                 OnPropertyChanged(nameof(IsMenuVisible));
             }
+        }
+
+        private ObservableCollection<ObservableCollection<char>> GetCrosswordData()
+        {
+            var collection = new ObservableCollection<ObservableCollection<char>>();
+
+            for (int i = 0; i < _crossword.Height; i++)
+            {
+                var row = new ObservableCollection<char>();
+                for (int j = 0; j < _crossword.Width; j++)
+                    {
+                        row.Add(_crossword.CrosswordData[i,j]);
+                    }
+                collection.Add(row);
+            }
+            return collection;
         }
 
         public bool IsCrosswordVisible
@@ -79,6 +96,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
                     case MenuOptions.LoadCrossword:
                         PreviousState = new NavigationState(this);
                         IsMenuVisible = false;
+                        IsCrosswordVisible = true;
                         break;
                     case MenuOptions.Quit:
                         Application.Current.MainWindow.Hide();

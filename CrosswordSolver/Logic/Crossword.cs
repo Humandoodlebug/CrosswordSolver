@@ -13,6 +13,32 @@ namespace SC.CrosswordSolver.Logic
             Words = words;
         }
 
+        public char[,] CrosswordData
+        {
+            get
+            {
+                var array = new char[Height, Width];
+                for (int i = 0; i < Height; i++)
+                    for (int j = 0; j < Width; j++)
+                    {
+                        array[i, j] = ' ';
+                    }
+                foreach (var word in Words)
+                {
+                    if (word.Direction == Word.Orientation.Down)
+                        for (int i = 0; i < word.Length; i++)
+                        {
+                            array[word.Y + i, word.X] = word.Letters[i];
+                        }
+                    else for (int i = 0; i < word.Length; i++)
+                        {
+                            array[word.Y, word.X + i] = word.Letters[i];
+                        }
+                }
+                return array;
+            }
+        }
+
         public List<Word> Words { get; }
         public int Width { get; }
         public int Height { get; }
@@ -24,7 +50,7 @@ namespace SC.CrosswordSolver.Logic
             public char[] Letters;
             public int Length => Letters.Length;
             public Orientation Direction;
-            
+
             public Word(int xPosition, int yPosition, int length, Orientation direction)
             {
                 X = xPosition;

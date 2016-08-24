@@ -53,7 +53,7 @@
         </DataTemplate>
         
         <DataTemplate x:Key="CellTemplate">
-            <TextBox Width="40" Height="40" Text="{Binding Path=.}" Margin="1" FontSize="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            <TextBox Width="40" Height="40" Text="{Binding Path=.}" Margin="1" FontSize="28" TextAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         </DataTemplate>
         
         <DataTemplate x:Key="RowTemplate">
@@ -71,6 +71,8 @@
         <viewModels:MainViewModel/>
     </UserControl.DataContext>
 
+    
+    
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="15"/>

@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using SC.CrosswordSolver.Logic;
 using SC.CrosswordSolver.UI.Annotations;
 using SC.CrosswordSolver.UI.Model;
+using SC.CrosswordSolver.UI.Views;
 
 namespace SC.CrosswordSolver.UI.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+
         private bool _isCrosswordVisible;
         private bool _isDimensionsVisible;
         private bool _isMenuVisible = true;
@@ -27,7 +31,8 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 MenuOptions.LoadCrossword,
                 MenuOptions.Quit
             };
-            GoBackCommand = new DelegateCommand(obj => GoBack());
+
+            
         }
 
         public int? Width { get; set; }
@@ -35,12 +40,49 @@ namespace SC.CrosswordSolver.UI.ViewModels
         public int? Height { get; set; }
 
         private Crossword _crossword;
+        private ObservableCollection<ObservableCollection<Cell>> _crosswordData;
+
+        private void CrosswordDataMember_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var senderCollection = (ObservableCollection<Cell>)sender;
+
+            if (e.NewItems.Count == 1)
+            {
+                char item;
+                var cell = (Cell)e.NewItems[0];
+                if (cell.Character == null)
+                    item = ' ';
+                else item = (char)cell.Character;
+
+                _crossword.CrosswordData[CrosswordData.IndexOf(senderCollection), e.NewStartingIndex] = item;
+            }
+            else throw new ArgumentException("More than one change was made to the collection.");
+        }
 
         public ObservableCollection<MenuOptions> MenuItems { get; }
 
-        public ObservableCollection<ObservableCollection<char>> CrosswordData { get; set; }
+        public ObservableCollection<ObservableCollection<Cell>> CrosswordData
+        {
+            get { return _crosswordData; }
+            set
+            {
+                if (Equals(value, _crosswordData)) return;
+                _crosswordData = value;
+                OnPropertyChanged(nameof(CrosswordData));
+            }
+        }
 
-        public ICommand GoBackCommand { get; }
+        public ObservableCollection<ObservableCollection<SolidColorBrush>> GridColours { get; set; }
+
+        public ICommand GoBackCommand => new DelegateCommand(obj => GoBack());
+        public ICommand GotoColourGrid => new DelegateCommand(obj => ShowColourGrid());
+
+        public void ShowColourGrid()
+        {
+            
+        }
+
+        
 
         public bool IsMenuVisible
         {
@@ -53,17 +95,24 @@ namespace SC.CrosswordSolver.UI.ViewModels
             }
         }
 
-        private ObservableCollection<ObservableCollection<char>> GetCrosswordData()
+        private ObservableCollection<ObservableCollection<Cell>> GetCrosswordData()
         {
-            var collection = new ObservableCollection<ObservableCollection<char>>();
+            var collection = new ObservableCollection<ObservableCollection<Cell>>();
 
             for (int i = 0; i < _crossword.Height; i++)
             {
-                var row = new ObservableCollection<char>();
+                var row = new ObservableCollection<Cell>();
                 for (int j = 0; j < _crossword.Width; j++)
+                {
+                    var cell = new Cell { Character = _crossword.CrosswordData[i, j], IsEnabled = true };
+                    if (cell.Character == '-')
                     {
-                        row.Add(_crossword.CrosswordData[i,j]);
+                        cell.Character = null;
+                        cell.IsEnabled = false;
                     }
+                    row.Add(cell);
+                }
+                row.CollectionChanged += CrosswordDataMember_CollectionChanged;
                 collection.Add(row);
             }
             return collection;
@@ -77,7 +126,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
             {
                 if (value == _isCrosswordVisible) return;
                 _isCrosswordVisible = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsCrosswordVisible));
             }
         }
 
@@ -96,6 +145,14 @@ namespace SC.CrosswordSolver.UI.ViewModels
                     case MenuOptions.LoadCrossword:
                         PreviousState = new NavigationState(this);
                         IsMenuVisible = false;
+                        var filePath = FileSysDialog.LoadDialog();
+                        if (!File.Exists(filePath))
+                        {
+                            GoBack();
+                            return;
+                        }
+                        _crossword = Crossword.Load(filePath);
+                        CrosswordData = GetCrosswordData();
                         IsCrosswordVisible = true;
                         break;
                     case MenuOptions.Quit:
@@ -133,17 +190,17 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void Populate()
-        {
-            var random = new Random();
-            for (var i = 0; i < 12; i++)
-            {
-                var currentData = new ObservableCollection<char>();
-                for (var j = 0; j < 12; j++)
-                    currentData.Add(random.Next(10).ToString()[0]);
-                CrosswordData.Add(currentData);
-            }
-        }
+        //private void Populate()
+        //{
+        //    var random = new Random();
+        //    for (var i = 0; i < 12; i++)
+        //    {
+        //        var currentData = new ObservableCollection<char?>();
+        //        for (var j = 0; j < 12; j++)
+        //            currentData.Add(random.Next(10).ToString()[0]);
+        //        CrosswordData.Add(currentData);
+        //    }
+        //}
 
         private void GoBack()
         {
@@ -170,6 +227,44 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 IsDimensionsVisible = model._isDimensionsVisible;
                 PreviousState = model.PreviousState;
                 IsCrosswordVisible = model.IsCrosswordVisible;
+            }
+        }
+
+        public struct Cell : INotifyPropertyChanged
+        {
+            private bool _isEnabled;
+            private char? _character;
+
+            public bool IsEnabled
+            {
+                get { return _isEnabled; }
+
+                set
+                {
+                    if (value == _isEnabled) return;
+                    _isEnabled = value;
+                    OnPropertyChanged(nameof(IsEnabled));
+                }
+            }
+
+            public char? Character
+            {
+                get { return _character; }
+
+                set
+                {
+                    if (value == _character) return;
+                    _character = value;
+                    OnPropertyChanged(nameof(Character));
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            [NotifyPropertyChangedInvocator]
+            private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }

@@ -1,16 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Principal;
 
 namespace SC.CrosswordSolver.Logic
 {
     [Serializable]
     public class Crossword
     {
-        public Crossword(int width, int height, List<Word> words)
+        public Crossword(int height, int width, List<Word> words)
         {
             Width = width;
             Height = height;
             Words = words;
+        }
+
+        public Crossword(char[,] dataGrid)
+        {
+            Height = dataGrid.GetLength(0);
+            Width = dataGrid.GetLength(1);
+            for (int i = 0; i < Height; i++)
+                for (int j = 0; j < Width; j++)
+                {
+                    if (dataGrid[i, j] == '*')
+                    {
+                        if (dataGrid[i, j + 1] == ' ')
+                        {
+                            var l = 1;
+                            while (dataGrid[i, j + l + 1] == ' ') l++;
+                            Words.Add(new Word(i,j,l,Word.Orientation.Across));
+                        }
+                        if (dataGrid[i+1,j] == ' ')
+                        {
+                            var l = 1;
+                            while (dataGrid[i+l+1,j] == ' ') l++;
+                            Words.Add(new Word(i, j, l, Word.Orientation.Down));
+                        }
+                    }
+                }
         }
 
         public char[,] CrosswordData
@@ -51,7 +79,7 @@ namespace SC.CrosswordSolver.Logic
             public int Length => Letters.Length;
             public Orientation Direction;
 
-            public Word(int xPosition, int yPosition, int length, Orientation direction)
+            public Word(int yPosition, int xPosition, int length, Orientation direction)
             {
                 X = xPosition;
                 Y = yPosition;
@@ -62,12 +90,20 @@ namespace SC.CrosswordSolver.Logic
 
         public void Save(string path)
         {
-            throw new NotImplementedException();
+            using (var stream = File.OpenWrite(path))
+            {
+                var binForm = new BinaryFormatter();
+                binForm.Serialize(stream, this);
+            }
         }
 
         public static Crossword Load(string path)
         {
-            throw new NotImplementedException();
+            using (var stream = File.OpenRead(path))
+            {
+                var binForm = new BinaryFormatter();
+                return (Crossword) binForm.Deserialize(stream);
+            }
         }
     }
 }

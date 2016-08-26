@@ -104,11 +104,11 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 var row = new ObservableCollection<Cell>();
                 for (int j = 0; j < _crossword.Width; j++)
                 {
-                    var cell = new Cell { Character = _crossword.CrosswordData[i, j], IsEnabled = true };
+                    var cell = new Cell { Character = _crossword.CrosswordData[i, j], IsEnabled = Cell.CellState.Active };
                     if (cell.Character == '-')
                     {
                         cell.Character = null;
-                        cell.IsEnabled = false;
+                        cell.IsEnabled = Cell.CellState.Inactive;
                     }
                     row.Add(cell);
                 }
@@ -232,10 +232,12 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public struct Cell : INotifyPropertyChanged
         {
-            private bool _isEnabled;
+            public enum CellState { Active, Starred, Inactive}
+
+            private CellState _isEnabled;
             private char? _character;
 
-            public bool IsEnabled
+            public CellState IsEnabled
             {
                 get { return _isEnabled; }
 

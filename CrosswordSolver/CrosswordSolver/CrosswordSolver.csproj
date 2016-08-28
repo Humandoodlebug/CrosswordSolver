@@ -64,6 +64,7 @@
     <Compile Include="Model\DelegateCommand.cs" />
     <Compile Include="Model\ObservableStack.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModels\CellViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\FileSysDialog.cs" />
     <Compile Include="Views\MainView.xaml.cs">
@@ -82,6 +83,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainViewResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

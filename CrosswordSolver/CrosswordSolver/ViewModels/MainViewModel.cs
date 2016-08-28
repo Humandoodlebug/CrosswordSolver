@@ -13,15 +13,36 @@ using SC.CrosswordSolver.UI.Views;
 
 namespace SC.CrosswordSolver.UI.ViewModels
 {
+
+    public enum LayoutInteractionMode
+    {
+        InvertActive,
+        InvertStarred
+    }
+
     public class MainViewModel : INotifyPropertyChanged
     {
 
         private bool _isCrosswordVisible;
         private bool _isDimensionsVisible;
         private bool _isMenuVisible = true;
+        private bool _isLayoutModeActive;
 
         private NavigationState _previousState;
 
+        public bool IsLayoutModeActive
+        {
+            get { return _isLayoutModeActive; }
+            set
+            {
+                if (_isLayoutModeActive == value) return;
+                _isLayoutModeActive = value;
+                OnPropertyChanged(nameof(IsLayoutModeActive));
+                OnPropertyChanged(nameof(IsSolvingModeActive));
+            }
+        }
+
+        public bool IsSolvingModeActive => !IsLayoutModeActive;
 
         public MainViewModel()
         {
@@ -31,8 +52,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 MenuOptions.LoadCrossword,
                 MenuOptions.Quit
             };
-
-            
+            Populate();
         }
 
         public int? Width { get; set; }
@@ -40,16 +60,17 @@ namespace SC.CrosswordSolver.UI.ViewModels
         public int? Height { get; set; }
 
         private Crossword _crossword;
-        private ObservableCollection<ObservableCollection<Cell>> _crosswordData;
+        private ObservableCollection<ObservableCollection<CellViewModel>> _crosswordData;
+        private LayoutInteractionMode _layoutGridMode;
 
         private void CrosswordDataMember_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            var senderCollection = (ObservableCollection<Cell>)sender;
+            var senderCollection = (ObservableCollection<CellViewModel>)sender;
 
             if (e.NewItems.Count == 1)
             {
                 char item;
-                var cell = (Cell)e.NewItems[0];
+                var cell = (CellViewModel)e.NewItems[0];
                 if (cell.Character == null)
                     item = ' ';
                 else item = (char)cell.Character;
@@ -61,7 +82,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public ObservableCollection<MenuOptions> MenuItems { get; }
 
-        public ObservableCollection<ObservableCollection<Cell>> CrosswordData
+        public ObservableCollection<ObservableCollection<CellViewModel>> CrosswordData
         {
             get { return _crosswordData; }
             set
@@ -75,14 +96,43 @@ namespace SC.CrosswordSolver.UI.ViewModels
         public ObservableCollection<ObservableCollection<SolidColorBrush>> GridColours { get; set; }
 
         public ICommand GoBackCommand => new DelegateCommand(obj => GoBack());
-        public ICommand GotoColourGrid => new DelegateCommand(obj => ShowColourGrid());
+        public ICommand ShowLayoutGridCommand => new DelegateCommand(obj => ShowLayoutGrid());
+        public ICommand ToNextModeCommand => new DelegateCommand(obj => ToNextMode());
 
-        public void ShowColourGrid()
+        public void ToNextMode()
         {
-            
+            if (!IsLayoutModeActive) return;
+            PreviousState = new NavigationState(this);
+            switch (LayoutGridMode)
+            {
+                case LayoutInteractionMode.InvertActive:
+                    LayoutGridMode = LayoutInteractionMode.InvertStarred;
+                    break;
+                case LayoutInteractionMode.InvertStarred:
+                    IsLayoutModeActive = false;
+                    break;
+            }
         }
 
-        
+        public void ShowLayoutGrid()
+        {
+            PreviousState = new NavigationState(this);
+            IsDimensionsVisible = false;
+            IsCrosswordVisible = true;
+            IsLayoutModeActive = true;
+        }
+
+        public LayoutInteractionMode LayoutGridMode
+        {
+            get { return _layoutGridMode; }
+            set
+            {
+                if (value == _layoutGridMode) return;
+                _layoutGridMode = value;
+                OnPropertyChanged(nameof(LayoutGridMode));
+            }
+        }
+
 
         public bool IsMenuVisible
         {
@@ -95,20 +145,20 @@ namespace SC.CrosswordSolver.UI.ViewModels
             }
         }
 
-        private ObservableCollection<ObservableCollection<Cell>> GetCrosswordData()
+        private ObservableCollection<ObservableCollection<CellViewModel>> GetCrosswordData()
         {
-            var collection = new ObservableCollection<ObservableCollection<Cell>>();
+            var collection = new ObservableCollection<ObservableCollection<CellViewModel>>();
 
             for (int i = 0; i < _crossword.Height; i++)
             {
-                var row = new ObservableCollection<Cell>();
+                var row = new ObservableCollection<CellViewModel>();
                 for (int j = 0; j < _crossword.Width; j++)
                 {
-                    var cell = new Cell { Character = _crossword.CrosswordData[i, j], IsEnabled = Cell.CellState.Active };
+                    var cell = new CellViewModel { Character = _crossword.CrosswordData[i, j], IsEnabled = CellViewModel.CellState.Active, ParentModel = this };
                     if (cell.Character == '-')
                     {
                         cell.Character = null;
-                        cell.IsEnabled = Cell.CellState.Inactive;
+                        cell.IsEnabled = CellViewModel.CellState.Inactive;
                     }
                     row.Add(cell);
                 }
@@ -190,23 +240,26 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        //private void Populate()
-        //{
-        //    var random = new Random();
-        //    for (var i = 0; i < 12; i++)
-        //    {
-        //        var currentData = new ObservableCollection<char?>();
-        //        for (var j = 0; j < 12; j++)
-        //            currentData.Add(random.Next(10).ToString()[0]);
-        //        CrosswordData.Add(currentData);
-        //    }
-        //}
+        private void Populate()
+        {
+            CrosswordData = new ObservableCollection<ObservableCollection<CellViewModel>>();
+            for (var i = 0; i < 12; i++)
+            {
+                var currentData = new ObservableCollection<CellViewModel>();
+                for (var j = 0; j < 12; j++)
+                    currentData.Add(new CellViewModel {Character = (char)('a' + j), ParentModel = this});
+                currentData.CollectionChanged += CrosswordDataMember_CollectionChanged;
+                CrosswordData.Add(currentData);
+            }
+        }
 
         private void GoBack()
         {
             IsMenuVisible = PreviousState.IsMenuVisible;
             IsDimensionsVisible = PreviousState.IsDimensionsVisible;
             IsCrosswordVisible = PreviousState.IsCrosswordVisible;
+            IsLayoutModeActive = PreviousState.IsLayoutModeActive;
+            LayoutGridMode = PreviousState.LayoutGridMode;
             PreviousState = PreviousState.PreviousState;
         }
 
@@ -220,53 +273,17 @@ namespace SC.CrosswordSolver.UI.ViewModels
             public readonly bool IsDimensionsVisible;
             public readonly bool IsMenuVisible;
             public readonly NavigationState PreviousState;
+            public readonly bool IsLayoutModeActive;
+            public LayoutInteractionMode LayoutGridMode;
 
             public NavigationState(MainViewModel model)
             {
                 IsMenuVisible = model._isMenuVisible;
                 IsDimensionsVisible = model._isDimensionsVisible;
-                PreviousState = model.PreviousState;
                 IsCrosswordVisible = model.IsCrosswordVisible;
-            }
-        }
-
-        public struct Cell : INotifyPropertyChanged
-        {
-            public enum CellState { Active, Starred, Inactive}
-
-            private CellState _isEnabled;
-            private char? _character;
-
-            public CellState IsEnabled
-            {
-                get { return _isEnabled; }
-
-                set
-                {
-                    if (value == _isEnabled) return;
-                    _isEnabled = value;
-                    OnPropertyChanged(nameof(IsEnabled));
-                }
-            }
-
-            public char? Character
-            {
-                get { return _character; }
-
-                set
-                {
-                    if (value == _character) return;
-                    _character = value;
-                    OnPropertyChanged(nameof(Character));
-                }
-            }
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            [NotifyPropertyChangedInvocator]
-            private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                IsLayoutModeActive = model.IsLayoutModeActive;
+                PreviousState = model.PreviousState;
+                LayoutGridMode = model.LayoutGridMode;
             }
         }
     }

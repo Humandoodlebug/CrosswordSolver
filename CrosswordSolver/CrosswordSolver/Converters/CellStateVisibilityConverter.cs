@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using SC.CrosswordSolver.UI.ViewModels;
-using static SC.CrosswordSolver.UI.ViewModels.MainViewModel.Cell;
 
 namespace SC.CrosswordSolver.UI.Converters
 {
@@ -15,8 +14,8 @@ namespace SC.CrosswordSolver.UI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var cellState = (CellState) parameter;
-            return cellState == CellState.Inactive ? Visibility.Hidden : Visibility.Visible;
+            var cellState = (CellViewModel.CellState) parameter;
+            return cellState == CellViewModel.CellState.Inactive ? Visibility.Hidden : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

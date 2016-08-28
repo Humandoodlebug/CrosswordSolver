@@ -1,0 +1,97 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:SC.CrosswordSolver.UI.Converters"
+                    xmlns:viewModels="clr-namespace:SC.CrosswordSolver.UI.ViewModels">
+    <Style x:Key="MenuItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Storyboard x:Key="FadeInAnimation" TargetProperty="Opacity">
+        <DoubleAnimation To="1" Duration="0:0:1">
+            <DoubleAnimation.EasingFunction>
+                <CubicEase EasingMode="EaseOut"/>
+            </DoubleAnimation.EasingFunction>
+        </DoubleAnimation>
+    </Storyboard>
+    <Storyboard x:Key="FadeOutAnimation" TargetProperty="Opacity">
+        <DoubleAnimation To="0" Duration="0:0:1">
+            <DoubleAnimation.EasingFunction>
+                <CubicEase EasingMode="EaseOut"/>
+            </DoubleAnimation.EasingFunction>
+        </DoubleAnimation>
+    </Storyboard>
+    <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    <DataTemplate x:Key="MenuTemplate" DataType="viewModels:MainViewModel">
+        <ListView x:Name="MenuList" VerticalAlignment="Center" BorderThickness="0" SelectedItem="{Binding SelectedMenuItem}"
+                 ItemsSource="{Binding MenuItems}" ItemContainerStyle="{StaticResource MenuItemStyle}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" FontSize="26"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListView>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsMenuVisible}" Value="False">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}"/>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+            <Trigger Property="Opacity" Value ="0">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <DataTemplate x:Key="CellTemplate" DataType="viewModels:CellViewModel">
+        <StackPanel Opacity="{Binding CellOpacity}">
+            <TextBox Width="40" Height="40" Text="{Binding Character}" Margin="1" FontSize="28" TextAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Visibility="{Binding DataContext.IsSolvingModeActive, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{Binding CellBackground}">
+            </TextBox>
+            <Button Width="40" Height="40" Margin="1" BorderThickness="0" Visibility="{Binding DataContext.IsLayoutModeActive, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{Binding CellBackground}" Command="{Binding ButtonClickCommand}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="RowTemplate">
+        <ItemsControl ItemsSource="{Binding}" ItemTemplate="{StaticResource CellTemplate}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </DataTemplate>
+    
+    <Style x:Key="DimensionsStyle" TargetType="FrameworkElement">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsDimensionsVisible}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}"/>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+            <Trigger Property="Opacity" Value="0">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="CrosswordStyle" TargetType="FrameworkElement">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsCrosswordVisible}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}"/>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+            <Trigger Property="Opacity" Value="0">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

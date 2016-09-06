@@ -20,8 +20,14 @@ namespace SC.CrosswordSolver.UI.ViewModels
         InvertStarred
     }
 
+    public enum WordDirection { Down, Across }
+
     public class MainViewModel : INotifyPropertyChanged
     {
+        public WordDirection SelectionDirection { get; set; }
+        public int SelectedWordRow = -1;
+        public int SelectedWordColumn;
+
 
         private bool _isCrosswordVisible;
         private bool _isDimensionsVisible;

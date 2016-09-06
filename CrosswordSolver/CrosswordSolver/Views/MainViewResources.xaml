@@ -47,9 +47,8 @@
 
     <DataTemplate x:Key="CellTemplate" DataType="viewModels:CellViewModel">
         <StackPanel Opacity="{Binding CellOpacity}">
-            <TextBox Width="40" Height="40" Text="{Binding Character}" Margin="1" FontSize="28" TextAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Visibility="{Binding DataContext.IsSolvingModeActive, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{Binding CellBackground}">
-            </TextBox>
-            <Button Width="40" Height="40" Margin="1" BorderThickness="0" Visibility="{Binding DataContext.IsLayoutModeActive, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}" Background="{Binding CellBackground}" Command="{Binding ButtonClickCommand}"/>
+            <Button Content ="{Binding Character}" FontSize="28" Width="40" Height="40" Margin="1" BorderThickness="{Binding ButtonBorderThickness}" BorderBrush="DeepSkyBlue" Background="{Binding CellBackground}" Command="{Binding ButtonClickCommand}">
+            </Button>
         </StackPanel>
     </DataTemplate>
 

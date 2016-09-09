@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using SC.CrosswordSolver.UI.Annotations;
@@ -8,7 +9,6 @@ using SC.CrosswordSolver.UI.Model;
 
 namespace SC.CrosswordSolver.UI.ViewModels
 {
-    // TODO: Setup a selection state enum to keep track of whether the cell or a cell in its word is selected. Also implement this for visual selection states in the View.
     public class CellViewModel : INotifyPropertyChanged
     {
         public enum CellSelectedState

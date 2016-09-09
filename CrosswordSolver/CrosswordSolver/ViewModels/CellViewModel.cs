@@ -25,6 +25,11 @@ namespace SC.CrosswordSolver.UI.ViewModels
             Inactive
         }
 
+        public CellViewModel(MainViewModel parentModel)
+        {
+            ParentModel = parentModel;
+        }
+
         private char? _character;
 
         private CellState _isEnabled;
@@ -71,6 +76,14 @@ namespace SC.CrosswordSolver.UI.ViewModels
             }
         }
 
+        public void SelectionDirectionValidator(ref WordDirection direction, int row, int column)
+        {
+            if (direction == WordDirection.Across && (column + 1 >= ParentModel.Width || ParentModel.CrosswordData[row][column + 1].IsEnabled == CellState.Inactive) && (column - 1 < 0 || ParentModel.CrosswordData[row][column-1].IsEnabled == CellState.Inactive))
+                direction = WordDirection.Down;
+            else if (direction == WordDirection.Down && (row + 1 >= ParentModel.Height || ParentModel.CrosswordData[row + 1][column].IsEnabled == CellState.Inactive) && (row - 1 < 0 || ParentModel.CrosswordData[row-1][column].IsEnabled == CellState.Inactive))
+                direction = WordDirection.Across;
+        }
+
         public CellSelectedState SelectionState
         {
             get { return _selectionState; }
@@ -91,6 +104,9 @@ namespace SC.CrosswordSolver.UI.ViewModels
                     value = CellSelectedState.WordSelected;
                     ParentModel.SelectedWordRow = row;
                     ParentModel.SelectedWordColumn = column;
+                    if (ParentModel.SelectionDirection == WordDirection.Down)
+                        row--;
+                    else column--;
                 }
 
                 switch (ParentModel.SelectionDirection)
@@ -108,32 +124,6 @@ namespace SC.CrosswordSolver.UI.ViewModels
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-
-
-                //if (value == CellSelectedState.WordSelected && _selectionState == CellSelectedState.Selected)
-                //    return;
-                //if (value == CellSelectedState.Selected)
-                //{
-                //    if ()
-                //}
-                //_selectionState = value;
-                //OnPropertyChanged(nameof(SelectionState));
-                //if (value == CellSelectedState.Selected)
-                //    value = CellSelectedState.WordSelected;
-                //int row, column;
-                //GetPosition(out row, out column);
-                //if (ParentModel.SelectionDirection == WordDirection.Down)
-                //{
-                //    if (row + 1 < ParentModel.CrosswordData.Count &&
-                //        ParentModel.CrosswordData[row + 1][column].IsEnabled != CellState.Inactive)
-                //        ParentModel.CrosswordData[row + 1][column].SelectionState = value;
-                //}
-                //else if (ParentModel.SelectionDirection == WordDirection.Across)
-                //{
-                //    if (column + 1 < ParentModel.CrosswordData[row].Count &&
-                //        ParentModel.CrosswordData[row][column + 1].IsEnabled != CellState.Inactive)
-                //        ParentModel.CrosswordData[row][column + 1].SelectionState = value;
-                //}
             }
         }
 
@@ -189,17 +179,12 @@ namespace SC.CrosswordSolver.UI.ViewModels
         private void GetWordStart(ref int row, ref int column, WordDirection orientation)
         {
             if (orientation == WordDirection.Across)
-                do
-                {
+                while ((column > 0) && (ParentModel.CrosswordData[row][column - 1].IsEnabled != CellState.Inactive))
                     column--;
-                } while ((column > 0) && (ParentModel.CrosswordData[row][column - 1].IsEnabled != CellState.Inactive));
 
             else if (orientation == WordDirection.Down)
-                do
-                {
+                while ((row > 0) && (ParentModel.CrosswordData[row - 1][column].IsEnabled != CellState.Inactive))
                     row--;
-                } while ((row > 0) && (ParentModel.CrosswordData[row - 1][column].IsEnabled != CellState.Inactive));
-
             else throw new InvalidEnumArgumentException(nameof(orientation), (int)orientation, typeof(WordDirection));
         }
 
@@ -242,13 +227,25 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 }
             else
             {
+
                 if (SelectionState == CellSelectedState.Selected)
                 {
-
                     ParentModel.CrosswordData[ParentModel.SelectedWordRow][ParentModel.SelectedWordColumn].SelectionState = CellSelectedState.NotSelected;
-                }
 
-                    SelectionState = CellSelectedState.Selected;
+                    ParentModel.SelectionDirection = ParentModel.SelectionDirection == WordDirection.Across
+                        ? WordDirection.Down
+                        : WordDirection.Across;
+                }
+                else if (ParentModel.SelectedWordRow != -1)
+                    ParentModel.CrosswordData[ParentModel.SelectedWordRow][ParentModel.SelectedWordColumn].SelectionState = CellSelectedState.NotSelected;
+
+                int row, column;
+                GetPosition(out row, out column);
+                var sd = ParentModel.SelectionDirection;
+                SelectionDirectionValidator(ref sd, row, column);
+                ParentModel.SelectionDirection = sd;
+
+                SelectionState = CellSelectedState.Selected;
             }
         }
 

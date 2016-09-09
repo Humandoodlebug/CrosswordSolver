@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -14,11 +15,7 @@ using SC.CrosswordSolver.UI.Views;
 namespace SC.CrosswordSolver.UI.ViewModels
 {
 
-    public enum LayoutInteractionMode
-    {
-        InvertActive,
-        InvertStarred
-    }
+    public enum LayoutInteractionMode { InvertActive, InvertStarred }
 
     public enum WordDirection { Down, Across }
 
@@ -58,7 +55,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 MenuOptions.LoadCrossword,
                 MenuOptions.Quit
             };
-            Populate();
+            //Populate();
         }
 
         public int? Width { get; set; }
@@ -80,7 +77,6 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 if (cell.Character == null)
                     item = ' ';
                 else item = (char)cell.Character;
-
                 _crossword.CrosswordData[CrosswordData.IndexOf(senderCollection), e.NewStartingIndex] = item;
             }
             else throw new ArgumentException("More than one change was made to the collection.");
@@ -122,10 +118,22 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public void ShowLayoutGrid()
         {
+            if (Height == null || Width == null) return;
+
             PreviousState = new NavigationState(this);
             IsDimensionsVisible = false;
-            IsCrosswordVisible = true;
+
+            CrosswordData = new ObservableCollection<ObservableCollection<CellViewModel>>();
+            for (int i = 0; i < (int) Height; i++)
+            {
+                CrosswordData.Add(new ObservableCollection<CellViewModel>());
+                for (int j = 0; j < (int) Width; j++)
+                {
+                    CrosswordData[i].Add(new CellViewModel(this));
+                }
+            }
             IsLayoutModeActive = true;
+            IsCrosswordVisible = true;
         }
 
         public LayoutInteractionMode LayoutGridMode
@@ -160,7 +168,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 var row = new ObservableCollection<CellViewModel>();
                 for (int j = 0; j < _crossword.Width; j++)
                 {
-                    var cell = new CellViewModel { Character = _crossword.CrosswordData[i, j], IsEnabled = CellViewModel.CellState.Active, ParentModel = this };
+                    var cell = new CellViewModel(parentModel:this) { Character = _crossword.CrosswordData[i, j], IsEnabled = CellViewModel.CellState.Active };
                     if (cell.Character == '-')
                     {
                         cell.Character = null;
@@ -253,7 +261,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
             {
                 var currentData = new ObservableCollection<CellViewModel>();
                 for (var j = 0; j < 12; j++)
-                    currentData.Add(new CellViewModel {Character = (char)('a' + j), ParentModel = this});
+                    currentData.Add(new CellViewModel(this) { Character = (char)('a' + j)});
                 currentData.CollectionChanged += CrosswordDataMember_CollectionChanged;
                 CrosswordData.Add(currentData);
             }

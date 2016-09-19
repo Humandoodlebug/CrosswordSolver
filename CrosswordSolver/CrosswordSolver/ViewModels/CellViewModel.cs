@@ -89,6 +89,8 @@ namespace SC.CrosswordSolver.UI.ViewModels
             get { return _selectionState; }
             set
             {
+                if (IsEnabled == CellState.Inactive)
+                    return;
                 if ((value != CellSelectedState.WordSelected) || (_selectionState != CellSelectedState.Selected))
                 {
                     _selectionState = value;

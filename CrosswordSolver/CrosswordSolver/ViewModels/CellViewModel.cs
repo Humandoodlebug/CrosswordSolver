@@ -90,7 +90,10 @@ namespace SC.CrosswordSolver.UI.ViewModels
             set
             {
                 if (IsEnabled == CellState.Inactive)
+                {
+                    ParentModel.SelectedRow = -1;
                     return;
+                }
                 if ((value != CellSelectedState.WordSelected) || (_selectionState != CellSelectedState.Selected))
                 {
                     _selectionState = value;
@@ -102,6 +105,8 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 GetPosition(out row, out column);
                 if (value == CellSelectedState.Selected)
                 {
+                    ParentModel.SelectedRow = row;
+                    ParentModel.SelectedColumn = column;
                     GetWordStart(ref row, ref column, ParentModel.SelectionDirection);
                     value = CellSelectedState.WordSelected;
                     ParentModel.SelectedWordRow = row;
@@ -170,6 +175,12 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
             set
             {
+                if (value == null)
+                {
+                    _character = null;
+                    OnPropertyChanged(nameof(Character));
+                    return;
+                }
                 if (value.ToString().ToUpper()[0] == _character) return;
                 _character = value.ToString().ToUpper()[0];
                 OnPropertyChanged(nameof(Character));

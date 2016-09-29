@@ -17,8 +17,35 @@
     <UserControl.DataContext>
         <viewModels:MainViewModel/>
     </UserControl.DataContext>
-
-
+    <UserControl.InputBindings>
+        <KeyBinding Key="A" Command="{Binding KeyDownCommand}" CommandParameter="A"/>
+        <KeyBinding Key="B" Command="{Binding KeyDownCommand}" CommandParameter="B"/>
+        <KeyBinding Key="C" Command="{Binding KeyDownCommand}" CommandParameter="C"/>
+        <KeyBinding Key="D" Command="{Binding KeyDownCommand}" CommandParameter="D"/>
+        <KeyBinding Key="E" Command="{Binding KeyDownCommand}" CommandParameter="E"/>
+        <KeyBinding Key="F" Command="{Binding KeyDownCommand}" CommandParameter="F"/>
+        <KeyBinding Key="G" Command="{Binding KeyDownCommand}" CommandParameter="G"/>
+        <KeyBinding Key="H" Command="{Binding KeyDownCommand}" CommandParameter="H"/>
+        <KeyBinding Key="I" Command="{Binding KeyDownCommand}" CommandParameter="I"/>
+        <KeyBinding Key="J" Command="{Binding KeyDownCommand}" CommandParameter="J"/>
+        <KeyBinding Key="K" Command="{Binding KeyDownCommand}" CommandParameter="K"/>
+        <KeyBinding Key="L" Command="{Binding KeyDownCommand}" CommandParameter="L"/>
+        <KeyBinding Key="M" Command="{Binding KeyDownCommand}" CommandParameter="M"/>
+        <KeyBinding Key="N" Command="{Binding KeyDownCommand}" CommandParameter="N"/>
+        <KeyBinding Key="O" Command="{Binding KeyDownCommand}" CommandParameter="O"/>
+        <KeyBinding Key="P" Command="{Binding KeyDownCommand}" CommandParameter="P"/>
+        <KeyBinding Key="Q" Command="{Binding KeyDownCommand}" CommandParameter="Q"/>
+        <KeyBinding Key="R" Command="{Binding KeyDownCommand}" CommandParameter="R"/>
+        <KeyBinding Key="S" Command="{Binding KeyDownCommand}" CommandParameter="S"/>
+        <KeyBinding Key="T" Command="{Binding KeyDownCommand}" CommandParameter="T"/>
+        <KeyBinding Key="U" Command="{Binding KeyDownCommand}" CommandParameter="U"/>
+        <KeyBinding Key="V" Command="{Binding KeyDownCommand}" CommandParameter="V"/>
+        <KeyBinding Key="W" Command="{Binding KeyDownCommand}" CommandParameter="W"/>
+        <KeyBinding Key="X" Command="{Binding KeyDownCommand}" CommandParameter="X"/>
+        <KeyBinding Key="Y" Command="{Binding KeyDownCommand}" CommandParameter="Y"/>
+        <KeyBinding Key="Z" Command="{Binding KeyDownCommand}" CommandParameter="Z"/>
+        <KeyBinding Key="Back" Command="{Binding KeyDownCommand}" CommandParameter="\"/>
+    </UserControl.InputBindings>
 
     <Grid Background="White">
         <Grid.RowDefinitions>

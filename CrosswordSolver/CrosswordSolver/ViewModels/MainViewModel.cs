@@ -67,6 +67,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
         private Crossword _crossword;
         private ObservableCollection<ObservableCollection<CellViewModel>> _crosswordData;
         private LayoutInteractionMode _layoutGridMode;
+        private bool _isNextButtonFocused;
 
         private void CrosswordDataMember_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -192,12 +193,15 @@ namespace SC.CrosswordSolver.UI.ViewModels
                     break;
                 case LayoutInteractionMode.InvertStarred:
                     IsLayoutModeActive = false;
+                    //TODO: Generate Model
+                    //_crossword = new Crossword();
                     break;
             }
         }
 
         public void ShowLayoutGrid()
         {
+            IsNextButtonFocused = true;
             if (Height == null || Width == null) return;
 
             PreviousState = new NavigationState(this);

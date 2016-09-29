@@ -65,13 +65,13 @@
                 <TextBlock Text="Height"/>
                 <TextBox Width="30" Margin="5,0" Text="{Binding Height}">
                     <TextBox.InputBindings>
-                        <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Enter"/>
+                        <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Return"/>
                     </TextBox.InputBindings>
                 </TextBox>
                 <TextBlock Text="Width"/>
                 <TextBox Width="30" Margin="5,0" Text="{Binding Width}">
                     <TextBox.InputBindings>
-                        <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Enter"/>
+                        <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Return"/>
                     </TextBox.InputBindings>
                 </TextBox>
                 <Button x:Name="ContinueButton" Content="Next" Command="{Binding ShowLayoutGridCommand}" Background="LightGray" BorderThickness="0" Width="40" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>

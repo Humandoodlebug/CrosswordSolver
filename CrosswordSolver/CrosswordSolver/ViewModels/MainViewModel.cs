@@ -106,7 +106,6 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public void KeyDown(char keyChar)
         {
-            //TODO: Finish KeyDown method so that it inputs into the Crossword.
             if (!IsSolvingModeActive || SelectedRow == -1) return;
             if (keyChar >= 'A' && keyChar <= 'Z')
             {
@@ -123,26 +122,59 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 {
                     case WordDirection.Down:
                         if (SelectedRow - 1 >= 0 && CrosswordData[SelectedRow-1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                            CrosswordData[SelectedRow-1][SelectedColumn].ButtonClickCommand.Execute(new object());
+                            CrosswordData[SelectedRow-1][SelectedColumn].ButtonClickCommand.Execute(null);
                         break;
                     case WordDirection.Across:
                         if (SelectedColumn - 1 >= 0 && CrosswordData[SelectedRow][SelectedColumn-1].IsEnabled != CellViewModel.CellState.Inactive)
-                            CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(new object());
+                            CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(null);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
                 return;
             }
+            else if (keyChar == '0')
+            {
+                if (SelectedRow - 1 >= 0 && CrosswordData[SelectedRow - 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
+                    CrosswordData[SelectedRow - 1][SelectedColumn].ButtonClickCommand.Execute(null);
+                if (SelectionDirection == WordDirection.Across)
+                    CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                return;
+            }
+            else if (keyChar == '1')
+            {
+                if (SelectedColumn + 1 < Width && CrosswordData[SelectedRow][SelectedColumn+1].IsEnabled != CellViewModel.CellState.Inactive)
+                    CrosswordData[SelectedRow][SelectedColumn+1].ButtonClickCommand.Execute(null);
+                if (SelectionDirection == WordDirection.Down)
+                    CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                return;
+            }
+            else if (keyChar == '2')
+            {
+                if (SelectedRow + 1 < Height && CrosswordData[SelectedRow + 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
+                    CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(null);
+                if (SelectionDirection == WordDirection.Across)
+                    CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                return;
+            }
+            else if (keyChar == '3')
+            {
+                if (SelectedColumn - 1 >= 0 && CrosswordData[SelectedRow][SelectedColumn-1].IsEnabled != CellViewModel.CellState.Inactive)
+                    CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(null);
+                if (SelectionDirection == WordDirection.Down)
+                    CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                return;
+            }
+            
             switch (SelectionDirection)
             {
                 case WordDirection.Down:
                     if (SelectedRow + 1 < Width && CrosswordData[SelectedRow+1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                    CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(new object());
+                    CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(null);
                     break;
                 case WordDirection.Across:
                     if (SelectedColumn + 1 < Width && CrosswordData[SelectedRow][SelectedColumn+1].IsEnabled != CellViewModel.CellState.Inactive)
-                    CrosswordData[SelectedRow][SelectedColumn+1].ButtonClickCommand.Execute(new object());
+                    CrosswordData[SelectedRow][SelectedColumn+1].ButtonClickCommand.Execute(null);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

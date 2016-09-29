@@ -45,6 +45,10 @@
         <KeyBinding Key="Y" Command="{Binding KeyDownCommand}" CommandParameter="Y"/>
         <KeyBinding Key="Z" Command="{Binding KeyDownCommand}" CommandParameter="Z"/>
         <KeyBinding Key="Back" Command="{Binding KeyDownCommand}" CommandParameter="\"/>
+        <KeyBinding Key="Up" Command="{Binding KeyDownCommand}" CommandParameter="0"/>
+        <KeyBinding Key="Right" Command="{Binding KeyDownCommand}" CommandParameter="1"/>
+        <KeyBinding Key="Down" Command="{Binding KeyDownCommand}" CommandParameter="2"/>
+        <KeyBinding Key="Left" Command="{Binding KeyDownCommand}" CommandParameter="3"/>
     </UserControl.InputBindings>
 
     <Grid Background="White">

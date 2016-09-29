@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using SC.CrosswordSolver.UI.Annotations;
@@ -62,7 +61,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 switch (value)
                 {
                     case CellSelectedState.Selected:
-                        ButtonBorderThickness = 2;
+                        ButtonBorderThickness = 3;
                         break;
                     case CellSelectedState.WordSelected:
                         ButtonBorderThickness = 1;

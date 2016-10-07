@@ -57,19 +57,19 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Button x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20" BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray" Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding GoBackCommand}" Margin="0,0,0,5"/>
+        <Button x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20" BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray" Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding GoBackCommand}" Margin="0,0,0,5" IsTabStop="False"/>
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center" Style="{StaticResource DimensionsStyle}" Opacity="0" IsHitTestVisible="{Binding IsDimensionsVisible}">
             <TextBlock Text="Please enter the dimensions of the crossword" Margin="5,0" TextAlignment="Center" VerticalAlignment="Center"/>
             <StackPanel Orientation="Horizontal" Margin="20,5" HorizontalAlignment="Center">
                 <TextBlock Text="Height"/>
-                <TextBox Width="30" Margin="5,0" Text="{Binding Height}">
+                <TextBox Name="HeightBox" Width="30" Margin="5,0" Text="{Binding Height, UpdateSourceTrigger=PropertyChanged}" TabIndex="1">
                     <TextBox.InputBindings>
                         <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Return"/>
                     </TextBox.InputBindings>
                 </TextBox>
                 <TextBlock Text="Width"/>
-                <TextBox Width="30" Margin="5,0" Text="{Binding Width}">
+                <TextBox Width="30" Margin="5,0" Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.InputBindings>
                         <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Return"/>
                     </TextBox.InputBindings>
@@ -84,7 +84,7 @@
         </StackPanel>
 
 
-        <ContentControl Grid.Row="1" ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}" IsHitTestVisible="{Binding IsMenuVisible}"/>
+        <ContentControl Grid.Row="1" ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}" IsHitTestVisible="{Binding IsMenuVisible}" Focusable="False"/>
 
     </Grid>
 </UserControl>

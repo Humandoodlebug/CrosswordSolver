@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -201,7 +200,6 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public void ShowLayoutGrid()
         {
-            IsNextButtonFocused = true;
             if (Height == null || Width == null) return;
 
             PreviousState = new NavigationState(this);

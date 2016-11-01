@@ -370,7 +370,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
             public readonly bool IsMenuVisible;
             public readonly NavigationState PreviousState;
             public readonly bool IsLayoutModeActive;
-            public LayoutInteractionMode LayoutGridMode;
+            public readonly LayoutInteractionMode LayoutGridMode;
 
             public NavigationState(MainViewModel model)
             {

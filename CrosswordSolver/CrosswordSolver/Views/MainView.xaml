@@ -50,11 +50,11 @@
         <KeyBinding Key="Down" Command="{Binding KeyDownCommand}" CommandParameter="2"/>
         <KeyBinding Key="Left" Command="{Binding KeyDownCommand}" CommandParameter="3"/>
     </UserControl.InputBindings>
-
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Button x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20" BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray" Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding GoBackCommand}" Margin="0,0,0,5" IsTabStop="False"/>
@@ -77,11 +77,12 @@
                 <Button x:Name="ContinueButton" Content="Next" Command="{Binding ShowLayoutGridCommand}" Background="LightGray" BorderThickness="0" Width="40" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             </StackPanel>
         </StackPanel>
-
-        <StackPanel Grid.Row="1" Style="{StaticResource CrosswordStyle}" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Stretch">
-            <ItemsControl  ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding CrosswordData}" Background="Black" BorderThickness="3" BorderBrush="Black" IsHitTestVisible="{Binding IsCrosswordVisible}" Margin="20"/>
-            <Button Content="Next" BorderThickness="0" Margin="5,0" IsHitTestVisible="{Binding IsCrosswordVisible}" HorizontalAlignment="Right" Command="{Binding ToNextModeCommand}" Visibility="{Binding IsLayoutModeActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-        </StackPanel>
+        
+        
+        <ScrollViewer Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0"  Style="{StaticResource CrosswordStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <ItemsControl  ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding CrosswordData}" Background="Black" BorderThickness="3" BorderBrush="Black" IsHitTestVisible="{Binding IsCrosswordVisible}" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </ScrollViewer>
+            <Button Grid.Row="2" Content="Next" BorderThickness="0" Margin="20,5" IsHitTestVisible="{Binding IsCrosswordVisible}" HorizontalAlignment="Right" Command="{Binding ToNextModeCommand}" Visibility="{Binding IsLayoutModeActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
 
         <ContentControl Grid.Row="1" ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}" IsHitTestVisible="{Binding IsMenuVisible}" Focusable="False"/>

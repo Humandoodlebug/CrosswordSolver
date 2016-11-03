@@ -2,8 +2,8 @@
 <UserControl x:Class="SC.CrosswordSolver.UI.Views.MainView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:SC.CrosswordSolver.UI.Views"
              xmlns:viewModels="clr-namespace:SC.CrosswordSolver.UI.ViewModels"
              xmlns:converters="clr-namespace:SC.CrosswordSolver.UI.Converters"
@@ -11,81 +11,101 @@
              d:DesignHeight="400" d:DesignWidth="700">
 
     <UserControl.Resources>
-        <ResourceDictionary Source="MainViewResources.xaml"/>
+        <ResourceDictionary Source="MainViewResources.xaml" />
     </UserControl.Resources>
 
     <UserControl.DataContext>
-        <viewModels:MainViewModel/>
+        <viewModels:MainViewModel />
     </UserControl.DataContext>
-    <UserControl.InputBindings>
-        <KeyBinding Key="A" Command="{Binding KeyDownCommand}" CommandParameter="A"/>
-        <KeyBinding Key="B" Command="{Binding KeyDownCommand}" CommandParameter="B"/>
-        <KeyBinding Key="C" Command="{Binding KeyDownCommand}" CommandParameter="C"/>
-        <KeyBinding Key="D" Command="{Binding KeyDownCommand}" CommandParameter="D"/>
-        <KeyBinding Key="E" Command="{Binding KeyDownCommand}" CommandParameter="E"/>
-        <KeyBinding Key="F" Command="{Binding KeyDownCommand}" CommandParameter="F"/>
-        <KeyBinding Key="G" Command="{Binding KeyDownCommand}" CommandParameter="G"/>
-        <KeyBinding Key="H" Command="{Binding KeyDownCommand}" CommandParameter="H"/>
-        <KeyBinding Key="I" Command="{Binding KeyDownCommand}" CommandParameter="I"/>
-        <KeyBinding Key="J" Command="{Binding KeyDownCommand}" CommandParameter="J"/>
-        <KeyBinding Key="K" Command="{Binding KeyDownCommand}" CommandParameter="K"/>
-        <KeyBinding Key="L" Command="{Binding KeyDownCommand}" CommandParameter="L"/>
-        <KeyBinding Key="M" Command="{Binding KeyDownCommand}" CommandParameter="M"/>
-        <KeyBinding Key="N" Command="{Binding KeyDownCommand}" CommandParameter="N"/>
-        <KeyBinding Key="O" Command="{Binding KeyDownCommand}" CommandParameter="O"/>
-        <KeyBinding Key="P" Command="{Binding KeyDownCommand}" CommandParameter="P"/>
-        <KeyBinding Key="Q" Command="{Binding KeyDownCommand}" CommandParameter="Q"/>
-        <KeyBinding Key="R" Command="{Binding KeyDownCommand}" CommandParameter="R"/>
-        <KeyBinding Key="S" Command="{Binding KeyDownCommand}" CommandParameter="S"/>
-        <KeyBinding Key="T" Command="{Binding KeyDownCommand}" CommandParameter="T"/>
-        <KeyBinding Key="U" Command="{Binding KeyDownCommand}" CommandParameter="U"/>
-        <KeyBinding Key="V" Command="{Binding KeyDownCommand}" CommandParameter="V"/>
-        <KeyBinding Key="W" Command="{Binding KeyDownCommand}" CommandParameter="W"/>
-        <KeyBinding Key="X" Command="{Binding KeyDownCommand}" CommandParameter="X"/>
-        <KeyBinding Key="Y" Command="{Binding KeyDownCommand}" CommandParameter="Y"/>
-        <KeyBinding Key="Z" Command="{Binding KeyDownCommand}" CommandParameter="Z"/>
-        <KeyBinding Key="Back" Command="{Binding KeyDownCommand}" CommandParameter="\"/>
-        <KeyBinding Key="Up" Command="{Binding KeyDownCommand}" CommandParameter="0"/>
-        <KeyBinding Key="Right" Command="{Binding KeyDownCommand}" CommandParameter="1"/>
-        <KeyBinding Key="Down" Command="{Binding KeyDownCommand}" CommandParameter="2"/>
-        <KeyBinding Key="Left" Command="{Binding KeyDownCommand}" CommandParameter="3"/>
-    </UserControl.InputBindings>
+    
     <Grid Background="White">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="30" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Button x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20" BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray" Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding GoBackCommand}" Margin="0,0,0,5" IsTabStop="False"/>
-
-        <StackPanel Grid.Row="1" VerticalAlignment="Center" Style="{StaticResource DimensionsStyle}" Opacity="0" IsHitTestVisible="{Binding IsDimensionsVisible}">
-            <TextBlock Text="Please enter the dimensions of the crossword" Margin="5,0" TextAlignment="Center" VerticalAlignment="Center"/>
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" Style="{StaticResource DimensionsStyle}" Opacity="0"
+                    IsHitTestVisible="{Binding IsDimensionsVisible}">
+            <TextBlock Text="Please enter the dimensions of the crossword" Margin="5,0" TextAlignment="Center"
+                       VerticalAlignment="Center" />
             <StackPanel Orientation="Horizontal" Margin="20,5" HorizontalAlignment="Center">
-                <TextBlock Text="Height"/>
-                <TextBox Name="HeightBox" Width="30" Margin="5,0" Text="{Binding Height, UpdateSourceTrigger=PropertyChanged}" TabIndex="1">
+                <TextBlock Text="Height" />
+                <TextBox Name="HeightBox" Width="30" Margin="5,0"
+                         Text="{Binding Height, UpdateSourceTrigger=PropertyChanged}" TabIndex="1">
                     <TextBox.InputBindings>
-                        <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Return"/>
+                        <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Return" />
                     </TextBox.InputBindings>
                 </TextBox>
-                <TextBlock Text="Width"/>
+                <TextBlock Text="Width" />
                 <TextBox Width="30" Margin="5,0" Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.InputBindings>
-                        <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Return"/>
+                        <KeyBinding Command="{Binding ShowLayoutGridCommand}" Key="Return" />
                     </TextBox.InputBindings>
                 </TextBox>
-                <Button x:Name="ContinueButton" Content="Next" Command="{Binding ShowLayoutGridCommand}" Background="LightGray" BorderThickness="0" Width="40" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <Button x:Name="ContinueButton" Content="Next" Command="{Binding ShowLayoutGridCommand}"
+                        Background="LightGray" BorderThickness="0" Width="40" VerticalAlignment="Stretch"
+                        VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
             </StackPanel>
         </StackPanel>
-        
-        
-        <ScrollViewer Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0"  Style="{StaticResource CrosswordStyle}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <ItemsControl  ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding CrosswordData}" Background="Black" BorderThickness="3" BorderBrush="Black" IsHitTestVisible="{Binding IsCrosswordVisible}" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </ScrollViewer>
-            <Button Grid.Row="2" Content="Next" BorderThickness="0" Margin="20,5" IsHitTestVisible="{Binding IsCrosswordVisible}" HorizontalAlignment="Right" Command="{Binding ToNextModeCommand}" Visibility="{Binding IsLayoutModeActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
 
-        <ContentControl Grid.Row="1" ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}" IsHitTestVisible="{Binding IsMenuVisible}" Focusable="False"/>
+        <ScrollViewer Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      Opacity="0" Style="{StaticResource CrosswordStyle}" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto">
+            
+            <ScrollViewer.InputBindings>
+                <KeyBinding Key="A" Command="{Binding KeyDownCommand}" CommandParameter="A" />
+                <KeyBinding Key="B" Command="{Binding KeyDownCommand}" CommandParameter="B" />
+                <KeyBinding Key="C" Command="{Binding KeyDownCommand}" CommandParameter="C" />
+                <KeyBinding Key="D" Command="{Binding KeyDownCommand}" CommandParameter="D" />
+                <KeyBinding Key="E" Command="{Binding KeyDownCommand}" CommandParameter="E" />
+                <KeyBinding Key="F" Command="{Binding KeyDownCommand}" CommandParameter="F" />
+                <KeyBinding Key="G" Command="{Binding KeyDownCommand}" CommandParameter="G" />
+                <KeyBinding Key="H" Command="{Binding KeyDownCommand}" CommandParameter="H" />
+                <KeyBinding Key="I" Command="{Binding KeyDownCommand}" CommandParameter="I" />
+                <KeyBinding Key="J" Command="{Binding KeyDownCommand}" CommandParameter="J" />
+                <KeyBinding Key="K" Command="{Binding KeyDownCommand}" CommandParameter="K" />
+                <KeyBinding Key="L" Command="{Binding KeyDownCommand}" CommandParameter="L" />
+                <KeyBinding Key="M" Command="{Binding KeyDownCommand}" CommandParameter="M" />
+                <KeyBinding Key="N" Command="{Binding KeyDownCommand}" CommandParameter="N" />
+                <KeyBinding Key="O" Command="{Binding KeyDownCommand}" CommandParameter="O" />
+                <KeyBinding Key="P" Command="{Binding KeyDownCommand}" CommandParameter="P" />
+                <KeyBinding Key="Q" Command="{Binding KeyDownCommand}" CommandParameter="Q" />
+                <KeyBinding Key="R" Command="{Binding KeyDownCommand}" CommandParameter="R" />
+                <KeyBinding Key="S" Command="{Binding KeyDownCommand}" CommandParameter="S" />
+                <KeyBinding Key="T" Command="{Binding KeyDownCommand}" CommandParameter="T" />
+                <KeyBinding Key="U" Command="{Binding KeyDownCommand}" CommandParameter="U" />
+                <KeyBinding Key="V" Command="{Binding KeyDownCommand}" CommandParameter="V" />
+                <KeyBinding Key="W" Command="{Binding KeyDownCommand}" CommandParameter="W" />
+                <KeyBinding Key="X" Command="{Binding KeyDownCommand}" CommandParameter="X" />
+                <KeyBinding Key="Y" Command="{Binding KeyDownCommand}" CommandParameter="Y" />
+                <KeyBinding Key="Z" Command="{Binding KeyDownCommand}" CommandParameter="Z" />
+                <KeyBinding Key="Back" Command="{Binding KeyDownCommand}" CommandParameter="\" />
+                <KeyBinding Key="Up" Command="{Binding KeyDownCommand}" CommandParameter="0" />
+                <KeyBinding Key="Right" Command="{Binding KeyDownCommand}" CommandParameter="1" />
+                <KeyBinding Key="Down" Command="{Binding KeyDownCommand}" CommandParameter="2" />
+                <KeyBinding Key="Left" Command="{Binding KeyDownCommand}" CommandParameter="3" />
+            </ScrollViewer.InputBindings>
+            
+            <ItemsControl ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding CrosswordData}"
+                          Background="Black" BorderThickness="3" BorderBrush="Black"
+                          IsHitTestVisible="{Binding IsCrosswordVisible}" Margin="20" HorizontalAlignment="Center"
+                          VerticalAlignment="Center" />
+        </ScrollViewer>
+        <Button Grid.Row="2" Content="Next" BorderThickness="0" Margin="20,5"
+                IsHitTestVisible="{Binding IsCrosswordVisible}" HorizontalAlignment="Right"
+                Command="{Binding ToNextModeCommand}"
+                Visibility="{Binding IsLayoutModeActive, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+
+        <ContentControl Grid.Row="1" ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}"
+                        IsHitTestVisible="{Binding IsMenuVisible}" Focusable="False" />
+        
+        <Button Grid.Row="0" x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20"
+                BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray"
+                Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding GoBackCommand}" Margin="0,0,0,5" IsTabStop="False" />
 
     </Grid>
 </UserControl>

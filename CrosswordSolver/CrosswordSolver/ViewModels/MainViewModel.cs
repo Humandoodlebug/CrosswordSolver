@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -57,7 +56,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 MenuOptions.LoadCrossword,
                 MenuOptions.Quit
             };
-            //Populate(); //Method for testing purposes
+            //Populate();
         }
 
         public int? Width { get; set; }
@@ -67,6 +66,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
         private Crossword _crossword;
         private ObservableCollection<ObservableCollection<CellViewModel>> _crosswordData;
         private LayoutInteractionMode _layoutGridMode;
+        private bool _isNextButtonFocused;
 
         private void CrosswordDataMember_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -111,51 +111,59 @@ namespace SC.CrosswordSolver.UI.ViewModels
             {
                 CrosswordData[SelectedRow][SelectedColumn].Character = keyChar;
             }
-            else switch (keyChar)
+            else if (keyChar == ' ')
             {
-                case ' ':
-                    CrosswordData[SelectedRow][SelectedColumn].Character = null;
-                    break;
-                case '\\':
-                    CrosswordData[SelectedRow][SelectedColumn].Character = null;
-                    switch (SelectionDirection)
-                    {
-                        case WordDirection.Down:
-                            if (SelectedRow - 1 >= 0 && CrosswordData[SelectedRow-1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                                CrosswordData[SelectedRow-1][SelectedColumn].ButtonClickCommand.Execute(null);
-                            break;
-                        case WordDirection.Across:
-                            if (SelectedColumn - 1 >= 0 && CrosswordData[SelectedRow][SelectedColumn-1].IsEnabled != CellViewModel.CellState.Inactive)
-                                CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(null);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                    return;
-                case '0':
-                    if (SelectedRow - 1 >= 0 && CrosswordData[SelectedRow - 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                        CrosswordData[SelectedRow - 1][SelectedColumn].ButtonClickCommand.Execute(null);
-                    if (SelectionDirection == WordDirection.Across)
-                        CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
-                    return;
-                case '1':
-                    if (SelectedColumn + 1 < Width && CrosswordData[SelectedRow][SelectedColumn+1].IsEnabled != CellViewModel.CellState.Inactive)
-                        CrosswordData[SelectedRow][SelectedColumn+1].ButtonClickCommand.Execute(null);
-                    if (SelectionDirection == WordDirection.Down)
-                        CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
-                    return;
-                case '2':
-                    if (SelectedRow + 1 < Height && CrosswordData[SelectedRow + 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                        CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(null);
-                    if (SelectionDirection == WordDirection.Across)
-                        CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
-                    return;
-                case '3':
-                    if (SelectedColumn - 1 >= 0 && CrosswordData[SelectedRow][SelectedColumn-1].IsEnabled != CellViewModel.CellState.Inactive)
-                        CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(null);
-                    if (SelectionDirection == WordDirection.Down)
-                        CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
-                    return;
+                CrosswordData[SelectedRow][SelectedColumn].Character = null;
+            }
+            else if (keyChar == '\\')
+            {
+                CrosswordData[SelectedRow][SelectedColumn].Character = null;
+                switch (SelectionDirection)
+                {
+                    case WordDirection.Down:
+                        if (SelectedRow - 1 >= 0 && CrosswordData[SelectedRow-1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
+                            CrosswordData[SelectedRow-1][SelectedColumn].ButtonClickCommand.Execute(null);
+                        break;
+                    case WordDirection.Across:
+                        if (SelectedColumn - 1 >= 0 && CrosswordData[SelectedRow][SelectedColumn-1].IsEnabled != CellViewModel.CellState.Inactive)
+                            CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(null);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                return;
+            }
+            else if (keyChar == '0')
+            {
+                if (SelectedRow - 1 >= 0 && CrosswordData[SelectedRow - 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
+                    CrosswordData[SelectedRow - 1][SelectedColumn].ButtonClickCommand.Execute(null);
+                if (SelectionDirection == WordDirection.Across)
+                    CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                return;
+            }
+            else if (keyChar == '1')
+            {
+                if (SelectedColumn + 1 < Width && CrosswordData[SelectedRow][SelectedColumn+1].IsEnabled != CellViewModel.CellState.Inactive)
+                    CrosswordData[SelectedRow][SelectedColumn+1].ButtonClickCommand.Execute(null);
+                if (SelectionDirection == WordDirection.Down)
+                    CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                return;
+            }
+            else if (keyChar == '2')
+            {
+                if (SelectedRow + 1 < Height && CrosswordData[SelectedRow + 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
+                    CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(null);
+                if (SelectionDirection == WordDirection.Across)
+                    CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                return;
+            }
+            else if (keyChar == '3')
+            {
+                if (SelectedColumn - 1 >= 0 && CrosswordData[SelectedRow][SelectedColumn-1].IsEnabled != CellViewModel.CellState.Inactive)
+                    CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(null);
+                if (SelectionDirection == WordDirection.Down)
+                    CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                return;
             }
             
             switch (SelectionDirection)

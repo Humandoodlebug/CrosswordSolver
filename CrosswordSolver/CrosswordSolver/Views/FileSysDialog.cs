@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,26 +8,42 @@ using Microsoft.Win32;
 
 namespace SC.CrosswordSolver.UI.Views
 {
-    class FileSysDialog
+    static class FileSysDialog
     {
-        public static string LoadDialog()
+        public static Stream LoadDialog()
         {
             var openDialog = new OpenFileDialog
             {
                 AddExtension = true,
                 CheckFileExists = true,
                 CheckPathExists = true,
-                DefaultExt = ".crsw",
-                Filter = "Crossword data files (.crsw)|*.crsw",
-            Multiselect = false
+                DefaultExt = ".crsword",
+                Filter = "Crossword data files (.crsword)|*.crsword",
+                Multiselect = false,
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             };
             openDialog.ShowDialog();
-            return openDialog.FileName;
+            return openDialog.OpenFile();
         }
 
-        public string SaveDialogue()
+        public static Stream SaveDialogue()
         {
-            throw new NotImplementedException();
+            var saveDialog = new SaveFileDialog
+            {
+                AddExtension = true,
+                CheckPathExists = true,
+                DefaultExt = ".crsword",
+                Filter = "Crossword data files (.crsword)|*.crsword",
+                OverwritePrompt = true,
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                FileName = "crossword"
+            };
+            if (saveDialog.ShowDialog() ?? false)
+                return saveDialog.OpenFile();
+            else
+            {
+                return null;
+            }
         }
     }
 }

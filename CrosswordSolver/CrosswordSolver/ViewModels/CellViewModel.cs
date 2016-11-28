@@ -20,7 +20,6 @@ namespace SC.CrosswordSolver.UI.ViewModels
         public enum CellState
         {
             Active,
-            Starred,
             Inactive
         }
 
@@ -31,13 +30,12 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         private char? _character;
 
-        private CellState _isEnabled;
+        private CellState _state;
         private CellSelectedState _selectionState = CellSelectedState.NotSelected;
         private int _buttonBorderThickness;
 
         public static SolidColorBrush InactiveBackgroundColour => Brushes.Black;
         public static SolidColorBrush ActiveBackgroundColour => Brushes.White;
-        public static SolidColorBrush StarredBackgroundColour => Brushes.CornflowerBlue;
         public ICommand ButtonClickCommand => new DelegateCommand(obj => ButtonClick());
 
         public int ButtonBorderThickness
@@ -51,8 +49,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
             }
         }
 
-        [NotNull]
-        public MainViewModel ParentModel { get; set; }
+        [NotNull] public MainViewModel ParentModel { get; set; }
 
         private CellSelectedState VisualSelectionState
         {
@@ -77,9 +74,14 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public void SelectionDirectionValidator(ref WordDirection direction, int row, int column)
         {
-            if (direction == WordDirection.Across && (column + 1 >= ParentModel.Width || ParentModel.CrosswordData[row][column + 1].IsEnabled == CellState.Inactive) && (column - 1 < 0 || ParentModel.CrosswordData[row][column-1].IsEnabled == CellState.Inactive))
+            if (direction == WordDirection.Across &&
+                (column + 1 >= ParentModel.Width ||
+                 ParentModel.CrosswordData[row][column + 1].State == CellState.Inactive) &&
+                (column - 1 < 0 || ParentModel.CrosswordData[row][column - 1].State == CellState.Inactive))
                 direction = WordDirection.Down;
-            else if (direction == WordDirection.Down && (row + 1 >= ParentModel.Height || ParentModel.CrosswordData[row + 1][column].IsEnabled == CellState.Inactive) && (row - 1 < 0 || ParentModel.CrosswordData[row-1][column].IsEnabled == CellState.Inactive))
+            else if (direction == WordDirection.Down &&
+                     (row + 1 >= ParentModel.Height || ParentModel.CrosswordData[row + 1][column].State == CellState.Inactive) &&
+                     (row - 1 < 0 || ParentModel.CrosswordData[row - 1][column].State == CellState.Inactive))
                 direction = WordDirection.Across;
         }
 
@@ -88,7 +90,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
             get { return _selectionState; }
             set
             {
-                if (IsEnabled == CellState.Inactive)
+                if (State == CellState.Inactive)
                 {
                     ParentModel.SelectedRow = -1;
                     return;
@@ -119,12 +121,12 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 {
                     case WordDirection.Down:
                         if ((row + 1 < ParentModel.CrosswordData.Count) &&
-                            (ParentModel.CrosswordData[row + 1][column].IsEnabled != CellState.Inactive))
+                            (ParentModel.CrosswordData[row + 1][column].State != CellState.Inactive))
                             ParentModel.CrosswordData[row + 1][column].SelectionState = value;
                         break;
                     case WordDirection.Across:
                         if ((column + 1 < ParentModel.CrosswordData[row].Count) &&
-                            (ParentModel.CrosswordData[row][column + 1].IsEnabled != CellState.Inactive))
+                            (ParentModel.CrosswordData[row][column + 1].State != CellState.Inactive))
                             ParentModel.CrosswordData[row][column + 1].SelectionState = value;
                         break;
                     default:
@@ -133,21 +135,19 @@ namespace SC.CrosswordSolver.UI.ViewModels
             }
         }
 
-        public double CellOpacity => IsEnabled == CellState.Inactive ? 0 : 1;
+        public double CellOpacity => State == CellState.Inactive ? 0 : 1;
 
 
         public SolidColorBrush CellBackground
         {
             get
             {
-                switch (IsEnabled)
+                switch (State)
                 {
                     case CellState.Active:
                         return ActiveBackgroundColour;
                     case CellState.Inactive:
                         return InactiveBackgroundColour;
-                    case CellState.Starred:
-                        return StarredBackgroundColour;
                     default:
                         throw new InvalidEnumArgumentException();
                 }
@@ -155,15 +155,15 @@ namespace SC.CrosswordSolver.UI.ViewModels
         }
 
 
-        public CellState IsEnabled
+        public CellState State
         {
-            get { return _isEnabled; }
+            get { return _state; }
 
             set
             {
-                if (value == _isEnabled) return;
-                _isEnabled = value;
-                OnPropertyChanged(nameof(IsEnabled));
+                if (value == _state) return;
+                _state = value;
+                OnPropertyChanged(nameof(State));
                 OnPropertyChanged(nameof(CellBackground));
             }
         }
@@ -191,13 +191,13 @@ namespace SC.CrosswordSolver.UI.ViewModels
         private void GetWordStart(ref int row, ref int column, WordDirection orientation)
         {
             if (orientation == WordDirection.Across)
-                while ((column > 0) && (ParentModel.CrosswordData[row][column - 1].IsEnabled != CellState.Inactive))
+                while ((column > 0) && (ParentModel.CrosswordData[row][column - 1].State != CellState.Inactive))
                     column--;
 
             else if (orientation == WordDirection.Down)
-                while ((row > 0) && (ParentModel.CrosswordData[row - 1][column].IsEnabled != CellState.Inactive))
+                while ((row > 0) && (ParentModel.CrosswordData[row - 1][column].State != CellState.Inactive))
                     row--;
-            else throw new InvalidEnumArgumentException(nameof(orientation), (int)orientation, typeof(WordDirection));
+            else throw new InvalidEnumArgumentException(nameof(orientation), (int) orientation, typeof(WordDirection));
         }
 
         private void GetPosition(out int i, out int j)
@@ -220,36 +220,21 @@ namespace SC.CrosswordSolver.UI.ViewModels
         public void ButtonClick()
         {
             if (ParentModel.IsLayoutModeActive)
-                switch (ParentModel.LayoutGridMode)
-                {
-                    case LayoutInteractionMode.InvertActive:
-                        IsEnabled = IsEnabled == CellState.Inactive ? CellState.Active : CellState.Inactive;
-                        break;
-                    case LayoutInteractionMode.InvertStarred:
-                        switch (IsEnabled)
-                        {
-                            case CellState.Active:
-                                IsEnabled = CellState.Starred;
-                                break;
-                            case CellState.Starred:
-                                IsEnabled = CellState.Active;
-                                break;
-                        }
-                        break;
-                }
+                State = State == CellState.Inactive ? CellState.Active : CellState.Inactive;
             else
             {
-
                 if (SelectionState == CellSelectedState.Selected)
                 {
-                    ParentModel.CrosswordData[ParentModel.SelectedWordRow][ParentModel.SelectedWordColumn].SelectionState = CellSelectedState.NotSelected;
+                    ParentModel.CrosswordData[ParentModel.SelectedWordRow][ParentModel.SelectedWordColumn]
+                        .SelectionState = CellSelectedState.NotSelected;
 
                     ParentModel.SelectionDirection = ParentModel.SelectionDirection == WordDirection.Across
                         ? WordDirection.Down
                         : WordDirection.Across;
                 }
                 else if (ParentModel.SelectedWordRow != -1)
-                    ParentModel.CrosswordData[ParentModel.SelectedWordRow][ParentModel.SelectedWordColumn].SelectionState = CellSelectedState.NotSelected;
+                    ParentModel.CrosswordData[ParentModel.SelectedWordRow][ParentModel.SelectedWordColumn]
+                        .SelectionState = CellSelectedState.NotSelected;
 
                 int row, column;
                 GetPosition(out row, out column);

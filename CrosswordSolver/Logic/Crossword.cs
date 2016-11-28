@@ -19,23 +19,24 @@ namespace SC.CrosswordSolver.Logic
         {
             Height = dataGrid.GetLength(0);
             Width = dataGrid.GetLength(1);
-            for (int i = 0; i < Height; i++)
-                for (int j = 0; j < Width; j++)
+            Words = new List<Word>();
+            for (var i = 0; i < Height; i++)
+                for (var j = 0; j < Width; j++)
                 {
-                    if (dataGrid[i, j] == '*')
+                    if (dataGrid[i, j] == '_') continue;
+                    if ((j + 1 < dataGrid.GetLength(1) && dataGrid[i, j + 1] == ' ') &&
+                        (j == 0 || dataGrid[i, j - 1] == '_'))
                     {
-                        if (dataGrid[i, j + 1] == ' ')
-                        {
-                            var l = 1;
-                            while (dataGrid[i, j + l + 1] == ' ') l++;
-                            Words.Add(new Word(i,j,l,Word.Orientation.Across));
-                        }
-                        if (dataGrid[i+1,j] == ' ')
-                        {
-                            var l = 1;
-                            while (dataGrid[i+l+1,j] == ' ') l++;
-                            Words.Add(new Word(i, j, l, Word.Orientation.Down));
-                        }
+                        var l = 1;
+                        while (j + l < dataGrid.GetLength(1) && dataGrid[i, j + l] == ' ') l++;
+                        Words.Add(new Word(i, j, l, Word.Orientation.Across));
+                    }
+                    if ((i + 1 < dataGrid.GetLength(0) && dataGrid[i + 1, j] == ' ') &&
+                        (i == 0 || dataGrid[i - 1, j] == '_'))
+                    {
+                        var l = 1;
+                        while (i + l < dataGrid.GetLength(0) && dataGrid[i + l, j] == ' ') l++;
+                        Words.Add(new Word(i, j, l, Word.Orientation.Down));
                     }
                 }
         }
@@ -45,23 +46,16 @@ namespace SC.CrosswordSolver.Logic
             get
             {
                 var array = new char[Height, Width];
-                for (int i = 0; i < Height; i++)
-                    for (int j = 0; j < Width; j++)
-                    {
-                        array[i, j] = ' ';
-                    }
+                for (var i = 0; i < Height; i++)
+                    for (var j = 0; j < Width; j++)
+                        array[i, j] = '_';
                 foreach (var word in Words)
-                {
                     if (word.Direction == Word.Orientation.Down)
-                        for (int i = 0; i < word.Length; i++)
-                        {
+                        for (var i = 0; i < word.Length; i++)
                             array[word.Y + i, word.X] = word.Letters[i];
-                        }
-                    else for (int i = 0; i < word.Length; i++)
-                        {
+                    else
+                        for (var i = 0; i < word.Length; i++)
                             array[word.Y, word.X + i] = word.Letters[i];
-                        }
-                }
                 return array;
             }
         }
@@ -70,9 +64,60 @@ namespace SC.CrosswordSolver.Logic
         public int Width { get; }
         public int Height { get; }
 
+        public void Update(char c, int row, int column)
+        {
+            foreach (var word in Words)
+            {
+                if (word.Direction == Word.Orientation.Down && column == word.X && row >= word.Y &&
+                    row < word.Y + word.Length)
+                {
+                    for (var i = 0; i < word.Length; i++)
+                        if (word.Y + i == row)
+                        {
+                            word.Letters[i] = c;
+                            break;
+                        }
+                }
+                else if (word.Direction == Word.Orientation.Across && row == word.Y && column >= word.X &&
+                         column < word.X + word.Length)
+                {
+                    for (var i = 0; i < word.Length; i++)
+                        if (word.X + i == column)
+                        {
+                            word.Letters[i] = c;
+                            break;
+                        }
+                }
+            }
+        }
+
+        public void Save(Stream stream)
+        {
+            using (stream)
+            {
+                var binForm = new BinaryFormatter();
+                binForm.Serialize(stream, this);
+            }
+        }
+
+        public static Crossword Load(Stream stream)
+        {
+            using (stream)
+            {
+                var binForm = new BinaryFormatter();
+                return (Crossword) binForm.Deserialize(stream);
+            }
+        }
+
+        [Serializable]
         public struct Word
         {
-            public enum Orientation { Down, Across }
+            public enum Orientation
+            {
+                Down,
+                Across
+            }
+
             public readonly int X, Y;
             public char[] Letters;
             public int Length => Letters.Length;
@@ -84,24 +129,6 @@ namespace SC.CrosswordSolver.Logic
                 Y = yPosition;
                 Letters = new char[length];
                 Direction = direction;
-            }
-        }
-
-        public void Save(string path)
-        {
-            using (var stream = File.OpenWrite(path))
-            {
-                var binForm = new BinaryFormatter();
-                binForm.Serialize(stream, this);
-            }
-        }
-
-        public static Crossword Load(string path)
-        {
-            using (var stream = File.OpenRead(path))
-            {
-                var binForm = new BinaryFormatter();
-                return (Crossword) binForm.Deserialize(stream);
             }
         }
     }

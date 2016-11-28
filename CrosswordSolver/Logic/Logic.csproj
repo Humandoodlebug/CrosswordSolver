@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Crossword.cs" />
     <Compile Include="Dictionary.cs" />
+    <Compile Include="Lookup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Thesaurus.cs" />
   </ItemGroup>
@@ -72,6 +73,9 @@
     <None Include="Thesauruses\README" />
     <None Include="Thesauruses\th_en_GB_final.dat" />
     <None Include="Thesauruses\th_en_GB_final.idx" />
+    <None Include="Thesauruses\th_en_US_v2.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="th_en_GB_final.dat" />
     <None Include="th_en_GB_final.idx" />
   </ItemGroup>
@@ -79,6 +83,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Dictionaries\corncob_caps_WordList.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Dictionaries\license.txt" />
     <Content Include="Dictionaries\README.txt" />
     <Content Include="Dictionaries\README_en_GB.txt" />

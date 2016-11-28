@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -14,26 +14,54 @@ using SC.CrosswordSolver.UI.Views;
 
 namespace SC.CrosswordSolver.UI.ViewModels
 {
+    public enum LayoutInteractionMode
+    {
+        InvertActive,
+        InvertStarred
+    }
 
-    public enum LayoutInteractionMode { InvertActive, InvertStarred }
-
-    public enum WordDirection { Down, Across }
+    public enum WordDirection
+    {
+        Down,
+        Across
+    }
 
     public class MainViewModel : INotifyPropertyChanged
     {
-        public WordDirection SelectionDirection { get; set; }
-        public int SelectedWordRow = -1;
-        public int SelectedWordColumn;
-        public int SelectedRow = -1;
-        public int SelectedColumn;
+        private Crossword _crossword;
+        private ObservableCollection<ObservableCollection<CellViewModel>> _crosswordData;
 
 
         private bool _isCrosswordVisible;
         private bool _isDimensionsVisible;
-        private bool _isMenuVisible = true;
         private bool _isLayoutModeActive;
+        private bool _isMenuVisible = true;
+        private LayoutInteractionMode _layoutGridMode;
 
         private NavigationState _previousState;
+        public int SelectedColumn;
+        public int SelectedRow = -1;
+        public int SelectedWordColumn;
+        public int SelectedWordRow = -1;
+
+        public MainViewModel()
+        {
+            MenuItems = new ObservableCollection<MenuOptions>
+            {
+                MenuOptions.NewCrossword,
+                MenuOptions.LoadCrossword,
+                MenuOptions.Quit
+            };
+#if DEBUG
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
+#endif
+            SuggestionsDataModel = new SuggestionsViewModel();
+            //Populate(); //Method for testing purposes
+        }
+
+        public WordDirection SelectionDirection { get; set; }
+
+        public SuggestionsViewModel SuggestionsDataModel { get; private set; }
 
         public bool IsLayoutModeActive
         {
@@ -49,40 +77,9 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public bool IsSolvingModeActive => !IsLayoutModeActive;
 
-        public MainViewModel()
-        {
-            MenuItems = new ObservableCollection<MenuOptions>
-            {
-                MenuOptions.NewCrossword,
-                MenuOptions.LoadCrossword,
-                MenuOptions.Quit
-            };
-            //Populate(); //Method for testing purposes
-        }
-
         public int? Width { get; set; }
 
         public int? Height { get; set; }
-
-        private Crossword _crossword;
-        private ObservableCollection<ObservableCollection<CellViewModel>> _crosswordData;
-        private LayoutInteractionMode _layoutGridMode;
-
-        private void CrosswordDataMember_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            var senderCollection = (ObservableCollection<CellViewModel>)sender;
-
-            if (e.NewItems.Count == 1)
-            {
-                char item;
-                var cell = (CellViewModel)e.NewItems[0];
-                if (cell.Character == null)
-                    item = ' ';
-                else item = (char)cell.Character;
-                _crossword.CrosswordData[CrosswordData.IndexOf(senderCollection), e.NewStartingIndex] = item;
-            }
-            else throw new ArgumentException("More than one change was made to the collection.");
-        }
 
         public ObservableCollection<MenuOptions> MenuItems { get; }
 
@@ -102,113 +99,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
         public ICommand GoBackCommand => new DelegateCommand(obj => GoBack());
         public ICommand ShowLayoutGridCommand => new DelegateCommand(obj => ShowLayoutGrid());
         public ICommand ToNextModeCommand => new DelegateCommand(obj => ToNextMode());
-        public ICommand KeyDownCommand => new DelegateCommand(obj => KeyDown(((string)obj)[0]));
-
-        public void KeyDown(char keyChar)
-        {
-            if (!IsSolvingModeActive || SelectedRow == -1) return;
-            if (keyChar >= 'A' && keyChar <= 'Z')
-            {
-                CrosswordData[SelectedRow][SelectedColumn].Character = keyChar;
-            }
-            else switch (keyChar)
-            {
-                case ' ':
-                    CrosswordData[SelectedRow][SelectedColumn].Character = null;
-                    break;
-                case '\\':
-                    CrosswordData[SelectedRow][SelectedColumn].Character = null;
-                    switch (SelectionDirection)
-                    {
-                        case WordDirection.Down:
-                            if (SelectedRow - 1 >= 0 && CrosswordData[SelectedRow-1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                                CrosswordData[SelectedRow-1][SelectedColumn].ButtonClickCommand.Execute(null);
-                            break;
-                        case WordDirection.Across:
-                            if (SelectedColumn - 1 >= 0 && CrosswordData[SelectedRow][SelectedColumn-1].IsEnabled != CellViewModel.CellState.Inactive)
-                                CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(null);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                    return;
-                case '0':
-                    if (SelectedRow - 1 >= 0 && CrosswordData[SelectedRow - 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                        CrosswordData[SelectedRow - 1][SelectedColumn].ButtonClickCommand.Execute(null);
-                    if (SelectionDirection == WordDirection.Across)
-                        CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
-                    return;
-                case '1':
-                    if (SelectedColumn + 1 < Width && CrosswordData[SelectedRow][SelectedColumn+1].IsEnabled != CellViewModel.CellState.Inactive)
-                        CrosswordData[SelectedRow][SelectedColumn+1].ButtonClickCommand.Execute(null);
-                    if (SelectionDirection == WordDirection.Down)
-                        CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
-                    return;
-                case '2':
-                    if (SelectedRow + 1 < Height && CrosswordData[SelectedRow + 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                        CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(null);
-                    if (SelectionDirection == WordDirection.Across)
-                        CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
-                    return;
-                case '3':
-                    if (SelectedColumn - 1 >= 0 && CrosswordData[SelectedRow][SelectedColumn-1].IsEnabled != CellViewModel.CellState.Inactive)
-                        CrosswordData[SelectedRow][SelectedColumn-1].ButtonClickCommand.Execute(null);
-                    if (SelectionDirection == WordDirection.Down)
-                        CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
-                    return;
-            }
-            
-            switch (SelectionDirection)
-            {
-                case WordDirection.Down:
-                    if (SelectedRow + 1 < Width && CrosswordData[SelectedRow+1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive)
-                    CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(null);
-                    break;
-                case WordDirection.Across:
-                    if (SelectedColumn + 1 < Width && CrosswordData[SelectedRow][SelectedColumn+1].IsEnabled != CellViewModel.CellState.Inactive)
-                    CrosswordData[SelectedRow][SelectedColumn+1].ButtonClickCommand.Execute(null);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public void ToNextMode()
-        {
-            if (!IsLayoutModeActive) return;
-            PreviousState = new NavigationState(this);
-            switch (LayoutGridMode)
-            {
-                case LayoutInteractionMode.InvertActive:
-                    LayoutGridMode = LayoutInteractionMode.InvertStarred;
-                    break;
-                case LayoutInteractionMode.InvertStarred:
-                    IsLayoutModeActive = false;
-                    //TODO: Generate Model
-                    //_crossword = new Crossword();
-                    break;
-            }
-        }
-
-        public void ShowLayoutGrid()
-        {
-            if (Height == null || Width == null) return;
-
-            PreviousState = new NavigationState(this);
-            IsDimensionsVisible = false;
-
-            CrosswordData = new ObservableCollection<ObservableCollection<CellViewModel>>();
-            for (int i = 0; i < (int) Height; i++)
-            {
-                CrosswordData.Add(new ObservableCollection<CellViewModel>());
-                for (int j = 0; j < (int) Width; j++)
-                {
-                    CrosswordData[i].Add(new CellViewModel(this));
-                }
-            }
-            IsLayoutModeActive = true;
-            IsCrosswordVisible = true;
-        }
+        public ICommand KeyDownCommand => new DelegateCommand(obj => KeyDown(((string) obj)[0]));
 
         public LayoutInteractionMode LayoutGridMode
         {
@@ -231,29 +122,6 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 _isMenuVisible = value;
                 OnPropertyChanged(nameof(IsMenuVisible));
             }
-        }
-
-        private ObservableCollection<ObservableCollection<CellViewModel>> GetCrosswordData()
-        {
-            var collection = new ObservableCollection<ObservableCollection<CellViewModel>>();
-
-            for (int i = 0; i < _crossword.Height; i++)
-            {
-                var row = new ObservableCollection<CellViewModel>();
-                for (int j = 0; j < _crossword.Width; j++)
-                {
-                    var cell = new CellViewModel(parentModel:this) { Character = _crossword.CrosswordData[i, j], IsEnabled = CellViewModel.CellState.Active };
-                    if (cell.Character == '-')
-                    {
-                        cell.Character = null;
-                        cell.IsEnabled = CellViewModel.CellState.Inactive;
-                    }
-                    row.Add(cell);
-                }
-                row.CollectionChanged += CrosswordDataMember_CollectionChanged;
-                collection.Add(row);
-            }
-            return collection;
         }
 
         public bool IsCrosswordVisible
@@ -328,6 +196,166 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void CrosswordDataMember_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var senderCollection = (ObservableCollection<CellViewModel>) sender;
+
+            if (e.NewItems.Count == 1)
+            {
+                char item;
+                var cell = (CellViewModel) e.NewItems[0];
+                if (cell.Character == null)
+                    item = ' ';
+                else item = (char) cell.Character;
+                _crossword.CrosswordData[CrosswordData.IndexOf(senderCollection), e.NewStartingIndex] = item;
+            }
+            else throw new ArgumentException($"More than one change was made to the collection {nameof(CrosswordData)}.");
+        }
+
+        public void KeyDown(char keyChar)
+        {
+            if (!IsSolvingModeActive || (SelectedRow == -1)) return;
+            if ((keyChar >= 'A') && (keyChar <= 'Z'))
+                CrosswordData[SelectedRow][SelectedColumn].Character = keyChar;
+            else
+                switch (keyChar)
+                {
+                    case ' ':
+                        CrosswordData[SelectedRow][SelectedColumn].Character = null;
+                        break;
+                    case '\\':
+                        CrosswordData[SelectedRow][SelectedColumn].Character = null;
+                        switch (SelectionDirection)
+                        {
+                            case WordDirection.Down:
+                                if ((SelectedRow - 1 >= 0) &&
+                                    (CrosswordData[SelectedRow - 1][SelectedColumn].IsEnabled !=
+                                     CellViewModel.CellState.Inactive))
+                                    CrosswordData[SelectedRow - 1][SelectedColumn].ButtonClickCommand.Execute(null);
+                                break;
+                            case WordDirection.Across:
+                                if ((SelectedColumn - 1 >= 0) &&
+                                    (CrosswordData[SelectedRow][SelectedColumn - 1].IsEnabled !=
+                                     CellViewModel.CellState.Inactive))
+                                    CrosswordData[SelectedRow][SelectedColumn - 1].ButtonClickCommand.Execute(null);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        return;
+                    case '0':
+                        if ((SelectedRow - 1 >= 0) &&
+                            (CrosswordData[SelectedRow - 1][SelectedColumn].IsEnabled !=
+                             CellViewModel.CellState.Inactive))
+                            CrosswordData[SelectedRow - 1][SelectedColumn].ButtonClickCommand.Execute(null);
+                        if (SelectionDirection == WordDirection.Across)
+                            CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                        return;
+                    case '1':
+                        if ((SelectedColumn + 1 < Width) &&
+                            (CrosswordData[SelectedRow][SelectedColumn + 1].IsEnabled !=
+                             CellViewModel.CellState.Inactive))
+                            CrosswordData[SelectedRow][SelectedColumn + 1].ButtonClickCommand.Execute(null);
+                        if (SelectionDirection == WordDirection.Down)
+                            CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                        return;
+                    case '2':
+                        if ((SelectedRow + 1 < Height) &&
+                            (CrosswordData[SelectedRow + 1][SelectedColumn].IsEnabled !=
+                             CellViewModel.CellState.Inactive))
+                            CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(null);
+                        if (SelectionDirection == WordDirection.Across)
+                            CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                        return;
+                    case '3':
+                        if ((SelectedColumn - 1 >= 0) &&
+                            (CrosswordData[SelectedRow][SelectedColumn - 1].IsEnabled !=
+                             CellViewModel.CellState.Inactive))
+                            CrosswordData[SelectedRow][SelectedColumn - 1].ButtonClickCommand.Execute(null);
+                        if (SelectionDirection == WordDirection.Down)
+                            CrosswordData[SelectedRow][SelectedColumn].ButtonClickCommand.Execute(null);
+                        return;
+                }
+
+            switch (SelectionDirection)
+            {
+                case WordDirection.Down:
+                    if ((SelectedRow + 1 < Width) &&
+                        (CrosswordData[SelectedRow + 1][SelectedColumn].IsEnabled != CellViewModel.CellState.Inactive))
+                        CrosswordData[SelectedRow + 1][SelectedColumn].ButtonClickCommand.Execute(null);
+                    break;
+                case WordDirection.Across:
+                    if ((SelectedColumn + 1 < Width) &&
+                        (CrosswordData[SelectedRow][SelectedColumn + 1].IsEnabled != CellViewModel.CellState.Inactive))
+                        CrosswordData[SelectedRow][SelectedColumn + 1].ButtonClickCommand.Execute(null);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void ToNextMode()
+        {
+            if (!IsLayoutModeActive) return;
+            PreviousState = new NavigationState(this);
+            switch (LayoutGridMode)
+            {
+                case LayoutInteractionMode.InvertActive:
+                    LayoutGridMode = LayoutInteractionMode.InvertStarred;
+                    break;
+                case LayoutInteractionMode.InvertStarred:
+                    IsLayoutModeActive = false;
+                    //TODO: Generate Model
+                    //_crossword = new Crossword();
+                    break;
+            }
+        }
+
+        public void ShowLayoutGrid()
+        {
+            if ((Height == null) || (Width == null)) return;
+
+            PreviousState = new NavigationState(this);
+            IsDimensionsVisible = false;
+
+            CrosswordData = new ObservableCollection<ObservableCollection<CellViewModel>>();
+            for (var i = 0; i < (int) Height; i++)
+            {
+                CrosswordData.Add(new ObservableCollection<CellViewModel>());
+                for (var j = 0; j < (int) Width; j++)
+                    CrosswordData[i].Add(new CellViewModel(this));
+            }
+            IsLayoutModeActive = true;
+            IsCrosswordVisible = true;
+        }
+
+        private ObservableCollection<ObservableCollection<CellViewModel>> GetCrosswordData()
+        {
+            var collection = new ObservableCollection<ObservableCollection<CellViewModel>>();
+
+            for (var i = 0; i < _crossword.Height; i++)
+            {
+                var row = new ObservableCollection<CellViewModel>();
+                for (var j = 0; j < _crossword.Width; j++)
+                {
+                    var cell = new CellViewModel(this)
+                    {
+                        Character = _crossword.CrosswordData[i, j],
+                        IsEnabled = CellViewModel.CellState.Active
+                    };
+                    if (cell.Character == '-')
+                    {
+                        cell.Character = null;
+                        cell.IsEnabled = CellViewModel.CellState.Inactive;
+                    }
+                    row.Add(cell);
+                }
+                row.CollectionChanged += CrosswordDataMember_CollectionChanged;
+                collection.Add(row);
+            }
+            return collection;
+        }
+
         private void Populate()
         {
             CrosswordData = new ObservableCollection<ObservableCollection<CellViewModel>>();
@@ -335,7 +363,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
             {
                 var currentData = new ObservableCollection<CellViewModel>();
                 for (var j = 0; j < 12; j++)
-                    currentData.Add(new CellViewModel(this) { Character = (char)('a' + j)});
+                    currentData.Add(new CellViewModel(this) {Character = (char) ('a' + j)});
                 currentData.CollectionChanged += CrosswordDataMember_CollectionChanged;
                 CrosswordData.Add(currentData);
             }
@@ -359,10 +387,10 @@ namespace SC.CrosswordSolver.UI.ViewModels
         {
             public readonly bool IsCrosswordVisible;
             public readonly bool IsDimensionsVisible;
-            public readonly bool IsMenuVisible;
-            public readonly NavigationState PreviousState;
             public readonly bool IsLayoutModeActive;
+            public readonly bool IsMenuVisible;
             public readonly LayoutInteractionMode LayoutGridMode;
+            public readonly NavigationState PreviousState;
 
             public NavigationState(MainViewModel model)
             {

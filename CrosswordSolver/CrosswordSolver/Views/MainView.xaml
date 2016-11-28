@@ -24,6 +24,10 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center" Style="{StaticResource DimensionsStyle}" Opacity="0"
                     IsHitTestVisible="{Binding IsDimensionsVisible}">
@@ -50,7 +54,7 @@
         </StackPanel>
 
 
-        <ScrollViewer Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+        <ScrollViewer Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                       Opacity="0" Style="{StaticResource CrosswordStyle}" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Auto">
             
@@ -93,16 +97,19 @@
                           IsHitTestVisible="{Binding IsCrosswordVisible}" Margin="20" HorizontalAlignment="Center"
                           VerticalAlignment="Center" />
         </ScrollViewer>
-        <Button Grid.Row="2" Content="Next" BorderThickness="0" Margin="20,5"
+        
+        <ContentControl Grid.Row="1" Grid.Column="1" ContentTemplate="{StaticResource SuggestionsPanel}" DataContext="{Binding SuggestionsDataModel}"/>
+        
+        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="Next" BorderThickness="0" Margin="20,5"
                 IsHitTestVisible="{Binding IsCrosswordVisible}" HorizontalAlignment="Right"
                 Command="{Binding ToNextModeCommand}"
                 Visibility="{Binding IsLayoutModeActive, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
 
-        <ContentControl Grid.Row="1" ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}"
+        <ContentControl Grid.Row="1" Grid.Column="0" ContentTemplate="{StaticResource MenuTemplate}" Content="{Binding}"
                         IsHitTestVisible="{Binding IsMenuVisible}" Focusable="False" />
-        
-        <Button Grid.Row="0" x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20"
+
+        <Button Grid.Row="0" Grid.Column="0" x:Name="BackButton" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="20"
                 BorderThickness="0" FontFamily="Segoe MDL2 Assets" Content="&#59179;" Background="LightGray"
                 Visibility="{Binding IsBackVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding GoBackCommand}" Margin="0,0,0,5" IsTabStop="False" />

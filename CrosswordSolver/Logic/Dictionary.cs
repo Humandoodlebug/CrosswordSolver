@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NHunspell;
 
-namespace Logic
+namespace SC.CrosswordSolver.Logic
 {
-    public class Dictionary
+    public class Dictionary : IDisposable
     {
         public Hunspell HunspellObj { get; }
 
@@ -23,6 +20,11 @@ namespace Logic
         ~Dictionary()
         {
             HunspellObj.Dispose();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

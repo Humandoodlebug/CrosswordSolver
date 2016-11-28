@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 namespace SC.CrosswordSolver.UI.Model
 {
+    //From http://www.wpftutorial.net/DelegateCommand.html
     public class DelegateCommand : ICommand
     {
         private readonly Predicate<object> _canExecute;

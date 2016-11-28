@@ -66,6 +66,7 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModels\CellViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\SuggestionsViewModel.cs" />
     <Compile Include="Views\FileSysDialog.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>

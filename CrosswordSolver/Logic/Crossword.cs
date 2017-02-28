@@ -128,6 +128,8 @@ namespace SC.CrosswordSolver.Logic
                 X = xPosition;
                 Y = yPosition;
                 Letters = new char[length];
+                for (var i = 0; i < Letters.Length; i++)
+                    Letters[i] = ' ';
                 Direction = direction;
             }
         }

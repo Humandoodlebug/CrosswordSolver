@@ -98,7 +98,7 @@
                           VerticalAlignment="Center" />
         </ScrollViewer>
         
-        <ContentControl Grid.Row="1" Grid.Column="1" ContentTemplate="{StaticResource SuggestionsPanel}" DataContext="{Binding SuggestionsDataModel}"/>
+        <ContentControl Grid.Row="1" Grid.Column="1" ContentTemplate="{StaticResource SuggestionsPanel}" Content="{Binding SuggestionsDataModel}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"/>
         
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="Next" BorderThickness="0" Margin="20,5"
                 IsHitTestVisible="{Binding IsCrosswordVisible}" HorizontalAlignment="Right"

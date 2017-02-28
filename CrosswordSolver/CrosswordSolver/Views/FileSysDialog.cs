@@ -23,7 +23,14 @@ namespace SC.CrosswordSolver.UI.Views
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             };
             openDialog.ShowDialog();
-            return openDialog.OpenFile();
+            try
+            {
+                return openDialog.OpenFile();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static Stream SaveDialogue()

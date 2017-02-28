@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -44,15 +45,61 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 MenuOptions.Quit
             };
 #if DEBUG
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                SuggestionsDataModel = new SuggestionsViewModel(false);
+                return;
+            }
 #endif
             SuggestionsDataModel = new SuggestionsViewModel();
             //Populate(); //Method for testing purposes
         }
 
+        public string SelectedWord
+        {
+            get
+            {
+                if (SelectedWordRow == -1) return null;
+                var word = string.Empty;
+                var i = 0;
+                switch (SelectionDirection)
+                {
+                    case WordDirection.Down:
+                    {
+                        while ((SelectedWordRow + i < _crossword.Height) &&
+                               (CrosswordData[SelectedWordRow + i][SelectedWordColumn].State !=
+                                CellViewModel.CellState.Inactive))
+                        {
+                            word += CrosswordData[SelectedWordRow + i][SelectedWordColumn].Character == null
+                                ? ' '
+                                : CrosswordData[SelectedWordRow + i][SelectedWordColumn].Character;
+                            i++;
+                        }
+                    }
+                        break;
+                    case WordDirection.Across:
+                    {
+                        while ((SelectedWordColumn + i < _crossword.Width) &&
+                               (CrosswordData[SelectedWordRow][SelectedWordColumn + i].State !=
+                                CellViewModel.CellState.Inactive))
+                        {
+                            word += CrosswordData[SelectedWordRow][SelectedWordColumn + i].Character == null
+                                ? ' '
+                                : CrosswordData[SelectedWordRow][SelectedWordColumn + i].Character;
+                            i++;
+                        }
+                    }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                return word;
+            }
+        }
+
         public WordDirection SelectionDirection { get; set; }
 
-        public SuggestionsViewModel SuggestionsDataModel { get; private set; }
+        public SuggestionsViewModel SuggestionsDataModel { get; }
 
         public bool IsLayoutModeActive
         {
@@ -131,6 +178,11 @@ namespace SC.CrosswordSolver.UI.ViewModels
                         PreviousState = new NavigationState(this);
                         IsMenuVisible = false;
                         var fileStream = FileSysDialog.LoadDialog();
+                        if (fileStream == null)
+                        {
+                            GoBack();
+                            return;
+                        }
                         _crossword = Crossword.Load(fileStream);
                         CrosswordData = GetCrosswordData();
                         IsLayoutModeActive = false;
@@ -173,6 +225,8 @@ namespace SC.CrosswordSolver.UI.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public void UpdateSuggestions() => SuggestionsDataModel.Suggest(SelectedWord);
+
         private void Save()
         {
             var filePath = FileSysDialog.SaveDialogue();
@@ -186,13 +240,11 @@ namespace SC.CrosswordSolver.UI.ViewModels
             char item;
             var cell = sender as CellViewModel;
             if (cell?.Character != null)
-            {
                 item = (char) cell.Character;
-                if (cell.State == CellViewModel.CellState.Inactive)
-                    item = '_';
-            }
             else
                 item = ' ';
+            if (cell?.State == CellViewModel.CellState.Inactive)
+                item = '_';
             var found = false;
             int i, j = 0;
             for (i = 0; i < CrosswordData.Count; i++)
@@ -353,6 +405,9 @@ namespace SC.CrosswordSolver.UI.ViewModels
             var collection = new ObservableCollection<ObservableCollection<CellViewModel>>();
             var crosswordData = _crossword.CrosswordData;
 
+            Width = _crossword.Width;
+            Height = _crossword.Height;
+
             for (var i = 0; i < _crossword.Height; i++)
             {
                 var row = new ObservableCollection<CellViewModel>();
@@ -361,7 +416,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
                     var cell = new CellViewModel(this)
                     {
                         Character = crosswordData[i, j],
-                        State = CellViewModel.CellState.Active,
+                        State = CellViewModel.CellState.Active
                     };
                     if (cell.Character == '_')
                     {
@@ -377,22 +432,22 @@ namespace SC.CrosswordSolver.UI.ViewModels
         }
 
 /*
-                                        private void Populate()
-                                        {
-                                            CrosswordData = new ObservableCollection<ObservableCollection<CellViewModel>>();
-                                            for (var i = 0; i < 12; i++)
-                                            {
-                                                var currentData = new ObservableCollection<CellViewModel>();
-                                                for (var j = 0; j < 12; j++)
-                                                {
-                                                    var cell = new CellViewModel(this) {Character = (char) ('a' + j)};
-                                                    cell.PropertyChanged += CrosswordCell_PropertyChanged;
-                                                    currentData.Add(cell);
-                                                }
-                                                CrosswordData.Add(currentData);
-                                            }
-                                        }
-                                */
+                                                                                                                        private void Populate()
+                                                                                                                        {
+                                                                                                                            CrosswordData = new ObservableCollection<ObservableCollection<CellViewModel>>();
+                                                                                                                            for (var i = 0; i < 12; i++)
+                                                                                                                            {
+                                                                                                                                var currentData = new ObservableCollection<CellViewModel>();
+                                                                                                                                for (var j = 0; j < 12; j++)
+                                                                                                                                {
+                                                                                                                                    var cell = new CellViewModel(this) {Character = (char) ('a' + j)};
+                                                                                                                                    cell.PropertyChanged += CrosswordCell_PropertyChanged;
+                                                                                                                                    currentData.Add(cell);
+                                                                                                                                }
+                                                                                                                                CrosswordData.Add(currentData);
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                */
 
         private void GoBack()
         {

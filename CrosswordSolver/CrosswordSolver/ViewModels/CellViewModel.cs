@@ -243,6 +243,7 @@ namespace SC.CrosswordSolver.UI.ViewModels
                 ParentModel.SelectionDirection = sd;
 
                 SelectionState = CellSelectedState.Selected;
+                ParentModel.UpdateSuggestions();
             }
         }
 

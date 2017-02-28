@@ -10,61 +10,73 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border CornerRadius="2" Background="{TemplateBinding Property=Background}">
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}" RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     <Style x:Key="MenuItemStyle" TargetType="{x:Type ListBoxItem}">
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
     </Style>
     <Storyboard x:Key="FadeInAnimation" TargetProperty="Opacity">
         <DoubleAnimation To="1" Duration="0:0:1">
             <DoubleAnimation.EasingFunction>
-                <CubicEase EasingMode="EaseOut"/>
+                <CubicEase EasingMode="EaseOut" />
             </DoubleAnimation.EasingFunction>
         </DoubleAnimation>
     </Storyboard>
     <Storyboard x:Key="FadeOutAnimation" TargetProperty="Opacity">
         <DoubleAnimation To="0" Duration="0:0:1">
             <DoubleAnimation.EasingFunction>
-                <CubicEase EasingMode="EaseOut"/>
+                <CubicEase EasingMode="EaseOut" />
             </DoubleAnimation.EasingFunction>
         </DoubleAnimation>
     </Storyboard>
-    <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
-    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <DataTemplate x:Key="MenuTemplate" DataType="viewModels:MainViewModel">
-        <ListView x:Name="MenuList" VerticalAlignment="Center" BorderThickness="0" SelectedItem="{Binding SelectedMenuItem}"
-                 ItemsSource="{Binding MenuItems}" ItemContainerStyle="{StaticResource MenuItemStyle}">
+        <ListView x:Name="MenuList" VerticalAlignment="Center" BorderThickness="0"
+                  SelectedItem="{Binding SelectedMenuItem}"
+                  ItemsSource="{Binding MenuItems}" ItemContainerStyle="{StaticResource MenuItemStyle}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" FontSize="26"/>
+                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" FontSize="26" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListView>
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding IsMenuVisible}" Value="False">
                 <DataTrigger.EnterActions>
-                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}"/>
+                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}" />
                 </DataTrigger.EnterActions>
                 <DataTrigger.ExitActions>
-                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
+                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}" />
                 </DataTrigger.ExitActions>
             </DataTrigger>
-            <Trigger Property="Opacity" Value ="0">
-                <Setter Property="Visibility" Value="Collapsed"/>
+            <Trigger Property="Opacity" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
             </Trigger>
         </DataTemplate.Triggers>
     </DataTemplate>
 
     <DataTemplate x:Key="CellTemplate" DataType="viewModels:CellViewModel">
-        <Button Content ="{Binding Character}" FontSize="28" Width="40" Height="40" Margin="1" BorderThickness="{Binding ButtonBorderThickness}" BorderBrush="DeepSkyBlue" Background="{Binding CellBackground}" Command="{Binding ButtonClickCommand}" Opacity="{Binding CellOpacity}">
+        <Button Content="{Binding Character}" FontSize="28" Width="40" Height="40" Margin="1"
+                BorderThickness="{Binding ButtonBorderThickness}" BorderBrush="DeepSkyBlue"
+                Background="{Binding CellBackground}" Command="{Binding ButtonClickCommand}"
+                Opacity="{Binding CellOpacity}">
             <Button.Template>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border CornerRadius="2" Background="{TemplateBinding Property=Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    <Border CornerRadius="2" Background="{TemplateBinding Property=Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}" RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                     </Border>
                 </ControlTemplate>
             </Button.Template>
@@ -75,7 +87,7 @@
         <ItemsControl ItemsSource="{Binding}" ItemTemplate="{StaticResource CellTemplate}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
+                    <StackPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
@@ -85,14 +97,14 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsDimensionsVisible}" Value="True">
                 <DataTrigger.EnterActions>
-                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
+                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}" />
                 </DataTrigger.EnterActions>
                 <DataTrigger.ExitActions>
-                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}"/>
+                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}" />
                 </DataTrigger.ExitActions>
             </DataTrigger>
             <Trigger Property="Opacity" Value="0">
-                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="Visibility" Value="Collapsed" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -101,32 +113,39 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsCrosswordVisible}" Value="True">
                 <DataTrigger.EnterActions>
-                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
+                    <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}" />
                 </DataTrigger.EnterActions>
                 <DataTrigger.ExitActions>
-                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}"/>
+                    <BeginStoryboard Storyboard="{StaticResource FadeOutAnimation}" />
                 </DataTrigger.ExitActions>
             </DataTrigger>
             <Trigger Property="Opacity" Value="0">
-                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="Visibility" Value="Collapsed" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <DataTemplate x:Key="SuggestionsPanel" DataType="viewModels:SuggestionsViewModel">
-        <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Search" Margin="5"/>
-                <TextBox MinWidth="100" HorizontalAlignment="Stretch" Margin="5" Text="{Binding SearchString}"/>
+                <TextBlock Text="Search" Margin="5" />
+                <TextBox MinWidth="100" HorizontalAlignment="Stretch" Margin="5"
+                         Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
-            <ItemsControl ItemsSource="{Binding Suggestions}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </StackPanel>
+            <ScrollViewer Grid.Row="1" ClipToBounds="True" IsTabStop="False" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Suggestions, IsAsync=True}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="16" Text="{Binding IsAsync=True}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </DataTemplate>
-    
+
 </ResourceDictionary>
